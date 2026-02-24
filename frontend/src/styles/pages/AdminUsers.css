@@ -1,0 +1,220 @@
+/**
+ * AdminUsers.css
+ * Versión final corregida: Alineación izquierda forzada en Nombre y Rol en una línea.
+ */
+
+/* =========================================
+   1. CONTENEDOR Y TARJETA
+   ========================================= */
+.mgmt-container {
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+    color: var(--text-main);
+    box-sizing: border-box;
+}
+
+.mgmt-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2.5rem;
+    box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+    animation: slideUp 0.4s ease-out;
+    overflow: hidden;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.mgmt-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1rem;
+}
+
+.mgmt-header h2 { margin: 0; font-size: 1.5rem; font-weight: 700; color: var(--text-main); }
+.subtitle { color: var(--text-muted); font-size: 0.95rem; margin-top: 5px; }
+
+/* =========================================
+   2. PESTAÑAS (TABS)
+   ========================================= */
+.tabs-container {
+    display: flex; gap: 12px; margin-bottom: 25px;
+    border-bottom: 1px solid var(--border); padding-bottom: 12px;
+}
+
+.tab {
+    background: transparent; border: 1px solid transparent; padding: 8px 20px;
+    color: var(--text-muted); font-weight: 600; cursor: pointer; border-radius: 6px;
+    transition: all 0.2s ease;
+}
+.tab:hover { color: var(--text-main); background: var(--bg-input); }
+.tab.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25); }
+
+/* =========================================
+   3. TABLA (CORREGIDA ALINEACIÓN)
+   ========================================= */
+.table-responsive { width: 100%; overflow-x: auto; }
+
+.mgmt-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto; /* Permite que el Rol se expanda si lo necesita */
+}
+
+.mgmt-table th {
+    padding: 14px 16px;
+    border-bottom: 2px solid var(--border);
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    text-align: left; /* Base para todos: Izquierda */
+}
+
+.mgmt-table td {
+    padding: 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+    color: var(--text-main);
+    font-size: 0.95rem;
+    text-align: left; /* Base para todos: Izquierda */
+}
+
+/* --- CORRECCIÓN EXPLÍCITA DE ALINEACIÓN --- */
+
+/* 1. La celda contenedora (td) */
+.mgmt-table td:nth-child(1) {
+    text-align: left !important;
+    width: 30%;
+}
+
+/* 2. El div interno (.user-info) */
+/* Esto fuerza a que el contenido flex se pegue al inicio (izquierda) */
+.user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start !important; /* CLAVE: Alinea los items a la izquierda */
+    justify-content: flex-start;
+    text-align: left !important;
+}
+
+/* --- Resto de columnas --- */
+
+/* Columna 2: Email */
+.mgmt-table th:nth-child(2),
+.mgmt-table td:nth-child(2) {
+    text-align: left;
+    width: 35%;
+}
+
+/* Columna 3: Rol (Forzar una línea) */
+.mgmt-table th:nth-child(3),
+.mgmt-table td:nth-child(3) {
+    width: 1%; /* Ocupa lo mínimo... */
+    white-space: nowrap; /* ...pero sin partir la línea */
+    text-align: center;
+}
+
+/* Columna 4: Acciones (Derecha) */
+.mgmt-table th:last-child,
+.mgmt-table td:last-child {
+    text-align: right !important;
+    width: 1%;
+    white-space: nowrap;
+}
+
+/* Badges */
+.role-badge {
+    display: inline-block; padding: 4px 12px; border-radius: 20px;
+    font-size: 0.75rem; font-weight: 800; text-transform: uppercase;
+    white-space: nowrap;
+}
+.role-badge.teacher { background: rgba(245, 158, 11, 0.1); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+.role-badge.student { background: rgba(59, 130, 246, 0.1); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+
+/* Iconos de acción */
+.action-group-btns { display: flex; justify-content: flex-end; gap: 8px; }
+.action-icon-btn {
+    background: transparent; border: 1px solid var(--border); border-radius: 6px; width: 34px; height: 34px;
+    display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; 
+    font-size: 1.1rem; color: var(--text-muted);
+}
+.action-icon-btn.edit:hover { background: var(--primary); border-color: var(--primary); color: white; }
+.action-icon-btn.delete:hover { background: var(--danger); border-color: var(--danger); color: white; }
+
+/* =========================================
+   4. FORMULARIO
+   ========================================= */
+.admin-form, .mgmt-form {
+    display: flex; flex-direction: column; gap: 24px; animation: fadeIn 0.3s ease-out;
+    max-width: 800px;
+}
+.grid-2-col, .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+
+.form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 0; }
+.form-group label { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
+
+.form-group input, .form-group select {
+    background: var(--bg-input) !important; border: 1px solid var(--border) !important;
+    padding: 12px 16px; border-radius: 8px; color: white !important; font-size: 0.95rem;
+    transition: 0.2s; width: 100%; box-sizing: border-box; height: 48px;
+}
+.form-group input:focus, .form-group select:focus { border-color: var(--primary) !important; outline: none; box-shadow: 0 0 0 2px var(--primary-glow); }
+
+.primary-btn {
+    background: var(--primary); color: white; border: none; padding: 10px 24px; border-radius: 8px;
+    font-weight: 700; cursor: pointer; transition: 0.2s;
+}
+.primary-btn:hover { filter: brightness(1.1); }
+.submit-btn { margin-top: 15px; height: 50px; width: 100%; }
+
+.cancel-btn {
+    background: transparent; border: 1px solid var(--border); color: var(--text-muted);
+    padding: 8px 18px; border-radius: 6px; cursor: pointer; transition: 0.2s;
+}
+.cancel-btn:hover { border-color: var(--danger); color: var(--danger); }
+
+.status-msg { padding: 14px; border-radius: 8px; text-align: center; font-size: 0.95rem; font-weight: 500; margin-top: 10px; }
+.status-msg.success { background: rgba(34, 197, 94, 0.1); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.2); }
+.status-msg.error { background: rgba(248, 113, 113, 0.1); color: #f87171; border: 1px solid rgba(248, 113, 113, 0.2); }
+
+.empty-state-container { text-align: center; padding: 60px 20px; color: var(--text-muted); font-style: italic; background: rgba(255,255,255,0.02); border-radius: 8px; margin-top: 20px; }
+
+@media (max-width: 768px) {
+    .grid-2-col, .form-grid { grid-template-columns: 1fr; }
+    .mgmt-table th:nth-child(2), .mgmt-table td:nth-child(2) { display: none; }
+}
+
+/* --- RESPONSIVE TABLES --- */
+@media (max-width: 768px) {
+    /* Ocultar la columna de Email en móviles para dar espacio al Nombre y Acciones */
+    .mgmt-table th:nth-child(2), 
+    .mgmt-table td:nth-child(2) {
+        display: none;
+    }
+
+    /* Dar más espacio al nombre */
+    .mgmt-table th:nth-child(1), 
+    .mgmt-table td:nth-child(1) {
+        width: auto; 
+    }
+    
+    /* Ajustar botones de acción */
+    .action-icon-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 0.9rem;
+    }
+}

@@ -1,0 +1,25 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "C:\\Users\\Alejandro\\Documents\\TFG-Unitestcode\\backend\\logs\\.e413bee10aa8553465c8ffba8c77285613f69607-audit.json",
+    "files": [
+        {
+            "date": 1767278424751,
+            "name": "C:\\Users\\Alejandro\\Documents\\TFG-Unitestcode\\backend\\logs\\application-2026-01-01.log",
+            "hash": "93a0700b3f5f7ea53225132243efb0be37a94517ff3803d4921ee6c1807a3217"
+        },
+        {
+            "date": 1767363167981,
+            "name": "C:\\Users\\Alejandro\\Documents\\TFG-Unitestcode\\backend\\logs\\application-2026-01-02.log",
+            "hash": "04ca5a10d59ca1f948af420ea0f3225b9b16ea176c520ac91aab5b0408c3b95d"
+        },
+        {
+            "date": 1768410871502,
+            "name": "C:\\Users\\Alejandro\\Documents\\TFG-Unitestcode\\backend\\logs\\application-2026-01-14.log",
+            "hash": "7e4897ad9c95013df9f7cdd5f23169792a648d9d6e55cbd9674529bbc6a4f75c"
+        }
+    ],
+    "hashType": "sha256"
+}

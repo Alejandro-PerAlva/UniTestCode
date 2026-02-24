@@ -1,0 +1,321 @@
+/**
+ * Dashboard.css
+ * Versión Final Definitiva.
+ * - Textos de listas fluyen naturalmente (sin cortes).
+ * - Alineaciones corregidas (Títulos centrados, texto explicativo a la izquierda).
+ * - Márgenes y espaciados equilibrados.
+ */
+
+/* --- LAYOUT GENERAL --- */
+.dashboard-wrapper {
+    padding: 40px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    color: var(--text-main);
+    box-sizing: border-box;
+}
+
+/* --- HEADER PRINCIPAL --- */
+.dashboard-header-main {
+    text-align: center;
+    margin-bottom: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.badge-top {
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--primary);
+    padding: 8px 18px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 3px;
+    display: inline-block;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    margin-bottom: 25px;
+    text-transform: uppercase;
+}
+
+.dashboard-header-main h1 {
+    font-size: 3.2rem;
+    font-weight: 900;
+    letter-spacing: -1.5px;
+    margin: 0 0 20px 0;
+    line-height: 1.1;
+}
+
+.text-gradient {
+    background: linear-gradient(to right, #60a5fa, #a855f7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.main-subtitle {
+    color: var(--text-muted);
+    font-size: 1.15rem;
+    max-width: 750px;
+    margin: 0 auto;
+    line-height: 1.6;
+    text-align: center; 
+}
+
+/* --- ZIGZAG FLOW --- */
+.workflow-zigzag {
+    display: flex;
+    flex-direction: column;
+    gap: 60px;
+    margin-bottom: 100px;
+}
+
+.zigzag-row {
+    display: flex;
+    align-items: stretch;
+    gap: 40px;
+}
+
+.zigzag-row.reverse {
+    flex-direction: row-reverse;
+}
+
+/* --- TAMAÑOS DE COLUMNAS --- */
+.side-button-container {
+    flex: 0 0 35%;
+    min-width: 300px;
+}
+
+.side-guide-container {
+    flex: 1;
+}
+
+/* --- TARJETAS DE ACCESO (BOTONES) --- */
+.access-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    height: 100%;
+    padding: 40px 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    text-align: center; /* Títulos e iconos centrados */
+    box-sizing: border-box;
+}
+
+.side-button-container:hover .access-card {
+    border-color: var(--primary);
+    background: rgba(255,255,255,0.03);
+    transform: translateY(-5px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.access-icon { 
+    font-size: 3.5rem; 
+    margin-bottom: 20px; 
+}
+
+.access-card h3 { 
+    font-size: 1.6rem; 
+    color: var(--text-main); 
+    margin: 0 0 15px 0;
+    font-weight: 700;
+}
+
+.access-label {
+    font-size: 0.75rem;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    color: var(--primary);
+    opacity: 0.8;
+    background: var(--bg-deep);
+    padding: 6px 12px;
+    border-radius: 20px;
+    white-space: nowrap; 
+}
+
+/* --- GUÍA BOXES (CONTENEDOR DE TEXTO) --- */
+.guide-box {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 40px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: left; /* Todo el texto alineado a la izquierda */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+}
+
+.guide-box h4 {
+    font-size: 1.3rem;
+    color: var(--primary);
+    margin: 0 0 25px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 800;
+    display: flex; 
+    align-items: center;
+    gap: 10px;
+}
+
+/* --- LISTAS DE TEXTO (CORREGIDO) --- */
+.guide-list-left, .guide-list-right {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.guide-list-left li, .guide-list-right li {
+    color: var(--text-muted);
+    margin-bottom: 18px;
+    font-size: 1rem;
+    line-height: 1.6;
+    
+    /* Configuración para que el texto fluya en una sola línea */
+    display: block; 
+    position: relative;
+    padding-left: 30px; /* Espacio reservado a la izquierda para la flecha */
+    text-align: left;
+}
+
+/* Flecha posicionada absolutamente */
+.guide-list-left li::before, .guide-list-right li::before {
+    content: "→";
+    color: var(--primary);
+    font-weight: bold;
+    font-size: 1.2rem;
+    position: absolute;
+    left: 0;
+    top: 0; /* Alineada con la primera línea */
+}
+
+/* Estilos de texto interno */
+.guide-list-left li code, .guide-list-right li code {
+    background: var(--bg-input);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+    color: var(--secondary);
+    font-size: 0.9em;
+    display: inline;
+}
+
+.guide-list-left li strong, .guide-list-right li strong {
+    color: var(--text-main);
+    font-weight: 700;
+}
+
+/* --- FAQ VERTICAL --- */
+.faq-vertical-section {
+    max-width: 850px;
+    margin: 0 auto;
+    padding-top: 2rem;
+}
+
+.section-label {
+    font-size: 0.85rem;
+    letter-spacing: 4px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-bottom: 40px;
+    text-transform: uppercase;
+    font-weight: 700;
+    opacity: 0.6;
+}
+
+.faq-vertical-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.faq-full-item {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+
+.faq-full-item:hover {
+    border-color: var(--primary);
+    background: var(--bg-input);
+}
+
+.faq-full-item.active {
+    border-color: var(--primary);
+    background: var(--bg-input);
+}
+
+.faq-full-head {
+    padding: 22px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 700;
+    color: var(--text-main);
+    font-size: 1.05rem;
+    text-align: left;
+}
+
+.faq-toggle-icon {
+    color: var(--primary);
+    font-size: 1.5rem;
+    line-height: 1;
+    margin-left: 15px;
+    flex-shrink: 0;
+}
+
+.faq-full-body {
+    padding: 0 30px 25px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    padding-top: 20px;
+    text-align: left;
+}
+
+/* --- ANIMACIONES --- */
+.fade-in-up {
+    animation: fadeInUp 0.7s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 900px) {
+    .dashboard-header-main h1 {
+        font-size: 2.2rem;
+    }
+
+    .zigzag-row, .zigzag-row.reverse { 
+        flex-direction: column; 
+        gap: 30px; 
+    }
+    
+    .side-button-container, .side-guide-container { 
+        flex: 1; 
+        width: 100%;
+        min-width: 0;
+    }
+
+    .access-card {
+        padding: 30px 20px;
+        min-height: auto;
+    }
+    
+    .guide-box {
+        padding: 30px;
+    }
+}

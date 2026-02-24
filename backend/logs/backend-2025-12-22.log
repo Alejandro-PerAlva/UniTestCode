@@ -1,0 +1,70 @@
+2025-12-22T19:02:26.972Z [gral] info: Servidor corriendo en http://localhost:5000
+2025-12-22T19:05:44.719Z [trasplanta] debug: Auto trasplantando comparacion de uploads\codigoAlumno-1766430344715-205364032.s en C:\Users\Alejandro\Documents\TFG-Unitestcode\backend\exercises\base\ejercicio_base.s
+2025-12-22T19:10:15.227Z [trasplanta] debug: Auto trasplantando comparacion de uploads\codigoAlumno-1766430615225-205087992.s en C:\Users\Alejandro\Documents\TFG-Unitestcode\backend\exercises\base\ejercicio_base.s
+2025-12-22T19:11:20.043Z [gral] info: Servidor corriendo en http://localhost:5000
+2025-12-22T19:11:27.940Z [trasplanta] debug: Auto trasplantando comparacion (fin: _fin)
+2025-12-22T19:12:51.901Z [gral] info: Servidor corriendo en http://localhost:5000
+2025-12-22T19:13:03.693Z [trasplanta] debug: Auto trasplantando comparacion (fin: _fin)
+2025-12-22T19:13:03.710Z [obtienerespuesta] debug: Ejecutable configurado: spim -f uploads\codigoAlumno-1766430783689-488127943_comparacion_trasp.s
+2025-12-22T19:24:10.342Z [gral] info: Servidor corriendo en http://localhost:5000
+2025-12-22T19:24:17.391Z [trasplanta] debug: Auto trasplantando comparacion (fin: _fin)
+2025-12-22T19:24:17.396Z [obtienerespuesta] debug: Configurado: C:\Users\Alejandro\Documents\TFG-Unitestcode\backend\bin\QtSpim.exe -file uploads\codigoAlumno-1766431457387-617652361_comparacion_trasp.s
+2025-12-22T19:27:50.571Z [gral] info: Servidor corriendo en http://localhost:5000
+2025-12-22T19:27:56.950Z [trasplanta] debug: Auto trasplantando comparacion (fin: _fin)
+2025-12-22T19:28:39.901Z [gral] info: Servidor corriendo en http://localhost:5000
+2025-12-22T19:28:44.311Z [trasplanta] debug: Auto trasplantando comparacion (fin: _fin)
+2025-12-22T19:28:52.315Z [trasplanta] debug: Auto trasplantando comparacion (fin: _fin)
+2025-12-22T19:31:15.898Z [gral] info: Servidor corriendo en http://localhost:5000
+2025-12-22T19:31:21.171Z [trasplanta] debug: Auto trasplantando comparacion (fin: _fin)
+2025-12-22T19:32:16.323Z [gral] info: Servidor corriendo en http://localhost:5000
+2025-12-22T19:32:20.099Z [trasplanta] debug: Auto trasplantando comparacion (fin: _fin)
+2025-12-22T19:34:54.395Z [gral] info: Servidor corriendo en http://localhost:5000
+2025-12-22T19:34:58.144Z [trasplanta] debug: Auto trasplantando comparacion (fin: _fin)
+2025-12-22T19:35:04.637Z [trasplanta] debug: Auto trasplantando comparacion (fin: _fin)
+2025-12-22T19:35:46.743Z [gral] info: Servidor corriendo en http://localhost:5000
+2025-12-22T19:35:49.820Z [trasplanta] debug: Auto trasplantando comparacion (fin: _fin)
+2025-12-22T20:02:54.287Z [gral] info: Servidor corriendo en http://localhost:5000
+2025-12-22T20:02:59.328Z [trasplanta] debug: Auto trasplantando comparacion (fin: _fin)
+2025-12-22T20:04:54.113Z [gral] info: Servidor corriendo en http://localhost:5000
+2025-12-22T20:05:01.040Z [trasplanta] debug: Auto trasplantando comparacion (fin: _fin)
+2025-12-22T20:05:04.022Z [trasplanta] debug: Auto trasplantando comparacion (fin: _fin)
+2025-12-22T20:05:08.107Z [trasplanta] debug: Auto trasplantando comparacion (fin: _fin)
+2025-12-22T20:09:46.975Z [gral] info: Servidor corriendo en puerto 5000
+2025-12-22T20:09:53.440Z [trasplanta] debug: Auto trasplantando comparacion (fin: _fin)
+2025-12-22T20:10:29.153Z [trasplanta] debug: Auto trasplantando comparacion (fin: _fin)
+2025-12-22T20:17:36.320Z [trasplanta] debug: Auto trasplantando comparacion (fin: _fin)
+2025-12-22T20:57:37.023Z [trasplanta] debug: Auto trasplantando comparacion (fin: _fin)
+2025-12-22T20:59:21.566Z [trasplanta] debug: Auto trasplantando comparacion (fin: _fin)
+2025-12-22T20:59:30.090Z [trasplanta] debug: Auto trasplantando comparacion (fin: _fin)
+2025-12-22T21:02:54.135Z [gral] info: Servidor corriendo en puerto 5000
+2025-12-22T21:03:50.136Z [gral] info: Servidor corriendo en puerto 5000
+2025-12-22T21:03:53.887Z [trasplanta] debug: Auto trasplantando calcular_mayor (fin: _fin)
+2025-12-22T21:04:10.445Z [trasplanta] debug: Auto trasplantando calcular_mayor (fin: _fin)
+2025-12-22T21:19:59.950Z [gral] info: Servidor corriendo en puerto 5000
+2025-12-22T21:30:30.812Z [trasplanta] debug: Auto trasplantando calcular_mayor (fin: _fin)
+2025-12-22T21:30:41.508Z [trasplanta] debug: Auto trasplantando calcular_mayor (fin: _fin)
+2025-12-22T21:31:18.844Z [trasplanta] debug: Auto trasplantando calcular_mayor (fin: _fin)
+2025-12-22T21:31:21.320Z [trasplanta] debug: Auto trasplantando calcular_mayor (fin: _fin)
+2025-12-22T21:31:56.487Z [trasplanta] debug: Auto trasplantando comparacion (fin: _fin)
+2025-12-22T21:32:42.344Z [trasplanta] debug: Auto trasplantando comparacion (fin: _fin)
+2025-12-22T21:32:44.542Z [trasplanta] debug: Auto trasplantando calcular_mayor (fin: _fin)
+2025-12-22T21:33:53.177Z [trasplanta] debug: Auto trasplantando calcular_mayor (fin: _fin)
+2025-12-22T21:35:15.068Z [trasplanta] debug: Auto trasplantando comparacion (fin: _fin)
+2025-12-22T21:35:19.020Z [trasplanta] debug: Auto trasplantando calcular_mayor (fin: _fin)
+2025-12-22T22:49:17.883Z [trasplanta] debug: Auto trasplantando comparacion (fin: _fin)
+2025-12-22T22:49:34.149Z [trasplanta] debug: Auto trasplantando calcular_mayor (fin: _fin)
+2025-12-22T22:49:45.949Z [trasplanta] debug: Auto trasplantando calcular_mayor (fin: _fin)
+2025-12-22T22:49:49.381Z [trasplanta] debug: Auto trasplantando calcular_mayor (fin: _fin)
+2025-12-22T22:51:40.595Z [trasplanta] debug: Auto trasplantando comparacion (fin: _fin)
+2025-12-22T22:51:59.472Z [trasplanta] debug: Auto trasplantando calcular_mayor (fin: _fin)
+2025-12-22T22:57:25.446Z [trasplanta] debug: Auto trasplantando calcular_mayor (fin: _fin)
+2025-12-22T22:57:36.688Z [trasplanta] debug: Auto trasplantando calcular_mayor (fin: _fin)
+2025-12-22T23:33:00.612Z [trasplanta] debug: Auto trasplantando calcular_mayor (fin: _fin)
+2025-12-22T23:33:30.802Z [trasplanta] debug: Auto trasplantando calcular_mayor (fin: _fin)
+2025-12-22T23:35:46.005Z [trasplanta] debug: Auto trasplantando comparacion (fin: _fin)
+2025-12-22T23:35:57.968Z [trasplanta] debug: Auto trasplantando factorial (fin: _fin)
+2025-12-22T23:42:27.143Z [trasplanta] debug: Auto trasplantando factorial (fin: _fin)
+2025-12-22T23:43:11.669Z [trasplanta] debug: Auto trasplantando factorial (fin: _fin)
+2025-12-22T23:43:43.539Z [trasplanta] debug: Auto trasplantando factorial (fin: _fin)
+2025-12-22T23:44:00.339Z [trasplanta] debug: Auto trasplantando factorial (fin: _fin)
+2025-12-22T23:44:15.008Z [trasplanta] debug: Auto trasplantando comparacion (fin: _fin)

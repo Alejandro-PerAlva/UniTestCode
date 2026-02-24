@@ -1,0 +1,267 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root {
+  /* --- MODO OSCURO (Default) --- */
+  --bg-deep: #0f172a;
+  --bg-panel: #1e293b;
+  --bg-input: #020617;
+  --bg-navbar: #000000;
+  --bg-badge: #111827;      
+  
+  --primary: #38bdf8;
+  --primary-glow: rgba(56, 189, 248, 0.2);
+  --primary-hover: #7dd3fc;
+  
+  --danger: #f87171;
+  --success: #4ade80;
+  --warning: #fbbf24;
+  
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+  
+  --color-admin: #f87171;   
+  --color-teacher: #fbbf24; 
+  --color-student: #4ade80; 
+  
+  --border: #334155;
+  --radius: 10px;
+  --shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+
+  /* Scrollbar Colors */
+  --scrollbar-bg: #0f172a;
+  --scrollbar-thumb: #334155;
+  --scrollbar-thumb-hover: #475569;
+}
+
+/* --- MODO CLARO --- */
+[data-theme='light'] {
+  --bg-deep: #cbd5e1;       
+  --bg-panel: #ffffff;      
+  --bg-input: #f1f5f9;      
+  --bg-navbar: #f8fafc;    
+  --bg-badge: #e2e8f0;      
+  
+  --primary: #0284c7;       
+  --primary-glow: rgba(2, 132, 199, 0.1);
+  --primary-hover: #0369a1;
+  
+  --text-main: #0f172a;     
+  --text-muted: #475569;    
+  
+  --color-admin: #dc2626;   
+  --color-teacher: #d97706; 
+  --color-student: #16a34a; 
+  
+  --border: #94a3b8;        
+  --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+
+  /* Scrollbar Colors Light */
+  --scrollbar-bg: #cbd5e1;
+  --scrollbar-thumb: #94a3b8;
+  --scrollbar-thumb-hover: #64748b;
+}
+
+/* --- RESET BÁSICO MEJORADO --- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px; /* Base size */
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg-deep);
+  color: var(--text-main);
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  overflow-x: hidden; 
+}
+
+/* --- SCROLLBAR PERSONALIZADO --- */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 5px;
+  border: 2px solid var(--scrollbar-bg);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+/* --- TIPOGRAFÍA Y ENLACES --- */
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* --- COMPONENTES GLOBALES --- */
+
+/* Contenedor Responsivo Global */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Card Base */
+.card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Botón Tema */
+.theme-toggle-btn {
+  background-color: var(--bg-navbar);
+  border: 1px solid var(--border);
+  color: var(--primary);
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.theme-toggle-btn:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--primary-glow);
+}
+
+.theme-toggle-btn:active {
+  transform: scale(0.95);
+}
+
+/* Botón Primario */
+.primary-btn {
+  background-color: var(--primary);
+  color: white; 
+  font-weight: 600;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.primary-btn:hover:not(:disabled) {
+  background-color: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--primary-glow);
+}
+
+.primary-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.primary-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  filter: grayscale(0.5);
+}
+
+/* --- OPTIMIZACIONES RESPONSIVE (MEDIA QUERIES) --- */
+
+/* 1. MÓVILES PEQUEÑOS Y MEDIANOS (hasta 600px) */
+@media (max-width: 600px) {
+  html {
+    font-size: 14px; 
+  }
+
+  .container {
+    padding: 0 16px; 
+  }
+
+  .card {
+    padding: 16px; 
+    border-radius: 8px;
+  }
+
+  h1 { font-size: 1.8rem; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.2rem; }
+
+  /* Inputs más grandes para evitar zoom en iOS y facilitar toque */
+  input, select, textarea, button {
+    font-size: 16px !important; 
+    min-height: 44px; 
+  }
+
+  /* Los botones ocupan el ancho completo en móvil para ser más fáciles de pulsar */
+  .primary-btn {
+    width: 100%;
+    padding: 14px;
+  }
+
+  /* Ajustes de espaciado vertical */
+  .dashboard-wrapper, .mgmt-container {
+    padding: 20px 15px !important;
+  }
+}
+
+/* 2. TABLETS (600px a 900px) */
+@media (min-width: 601px) and (max-width: 900px) {
+  .card {
+    padding: 20px;
+  }
+
+  /* Grid layouts básicos se convierten en 2 columnas si estaban en más */
+  .grid-3-col, .grid-4-col {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* 3. PANTALLAS GRANDES Y MONITORES WIDE (> 1400px) */
+@media (min-width: 1400px) {
+  .container, .dashboard-wrapper, .mgmt-container {
+    max-width: 1400px; 
+  }
+
+  html {
+    font-size: 17px; 
+  }
+}
+
+/* --- UTILIDADES DE VISIBILIDAD --- */
+.mobile-only { display: none; }
+.desktop-only { display: block; }
+
+@media (max-width: 768px) {
+  .mobile-only { display: block; }
+  .desktop-only { display: none; }
+}

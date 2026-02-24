@@ -1,0 +1,279 @@
+/**
+ * AdminExercises.css
+ * Estilos para la gestión administrativa de ejercicios (Tabla y Formulario).
+ * Fusiona estilos de ExerciseControl y AdminPanel.
+ */
+
+/* --- LAYOUT GENERAL --- */
+/* Aseguramos que el contenedor padre esté centrado */
+.mgmt-container, .admin-container {
+    max-width: 1000px;
+    width: 100%; /* Ocupa todo el ancho posible hasta el max */
+    margin: 2rem auto; /* Centrado horizontal automático */
+    padding: 0 1rem;
+    color: var(--text-main);
+    box-sizing: border-box; /* Evita desbordes */
+}
+
+/* La tarjeta (Card) que contiene el formulario */
+.mgmt-card, .admin-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2.5rem;
+    box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+    animation: slideUp 0.4s ease-out;
+    
+    /* Aseguramos que ocupe el 100% del contenedor padre centrado */
+    width: 100%; 
+    box-sizing: border-box;
+    margin: 0 auto; /* Refuerzo de centrado */
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.mgmt-header, .admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1rem;
+}
+
+.mgmt-header h2, .admin-header h2 { 
+    margin: 0; 
+    font-size: 1.5rem; 
+    font-weight: 700; 
+    color: var(--text-main); 
+}
+
+.subtitle { 
+    color: var(--text-muted); 
+    font-size: 0.95rem; 
+    margin-top: 5px; 
+}
+
+/* --- TABLA (ExerciseTable) --- */
+.table-responsive { width: 100%; overflow-x: auto; }
+
+.mgmt-table { width: 100%; border-collapse: collapse; text-align: left; }
+
+.mgmt-table th {
+    padding: 12px 16px; 
+    border-bottom: 2px solid var(--border);
+    color: var(--text-muted); 
+    font-size: 0.8rem; 
+    text-transform: uppercase;
+}
+
+.mgmt-table td {
+    padding: 16px; 
+    border-bottom: 1px solid var(--border); 
+    vertical-align: middle;
+}
+
+.exercise-info { display: flex; flex-direction: column; }
+.exercise-id-sub { font-size: 0.75rem; color: var(--text-muted); font-family: monospace; }
+
+/* Switch Toggle */
+.switch-container { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.switch-track {
+    width: 40px; height: 20px; background: var(--bg-deep);
+    border-radius: 20px; position: relative; transition: 0.3s;
+    border: 1px solid var(--border);
+}
+.switch-track.active { background: var(--success); border-color: var(--success); }
+.switch-knob {
+    width: 16px; height: 16px; background: white; border-radius: 50%;
+    position: absolute; top: 1px; left: 2px; transition: 0.3s;
+}
+.switch-track.active .switch-knob { left: 20px; }
+.switch-label { font-size: 0.8rem; font-weight: 600; min-width: 50px; }
+
+/* Botones de Acción (Tabla) */
+.action-group-btns { display: flex; justify-content: flex-end; gap: 8px; }
+
+.action-icon-btn {
+    background: transparent; border: 1px solid var(--border);
+    border-radius: 6px; width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: 0.2s; font-size: 1rem;
+}
+.action-icon-btn.edit:hover { background: var(--primary); border-color: var(--primary); }
+.action-icon-btn.delete:hover { background: var(--danger); border-color: var(--danger); }
+
+/* --- FORMULARIO (ExerciseForm) --- */
+/* Aquí está la clave: max-width para que no sea eterno, y margin auto para centrarlo DENTRO de la tarjeta */
+.admin-form { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 20px; 
+    max-width: 800px; /* Ancho máximo razonable para el form */
+    margin: 0 auto; /* CENTRADO HORIZONTAL DEL FORMULARIO */
+    width: 100%;
+}
+
+.form-group { margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px; width: 100%; }
+
+.form-group label {
+    display: block; font-size: 0.85rem; color: var(--text-muted); 
+    font-weight: 500;
+}
+
+input[type="text"], textarea {
+    width: 100%; box-sizing: border-box;
+    background-color: var(--bg-input);
+    border: 1px solid var(--border);
+    color: var(--text-main);
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: 0.2s;
+}
+
+input:focus, textarea:focus {
+    outline: none; border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+.input-code { 
+    font-family: 'JetBrains Mono', monospace; 
+    color: var(--primary) !important; 
+    font-weight: 600; 
+}
+
+.grid-2-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; }
+
+/* --- TEST INPUT LIST (Argumentos) --- */
+.test-input-list-container {
+    margin-top: 10px;
+    width: 100%;
+}
+
+.args-container {
+    background: rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--border); 
+    border-radius: 8px;
+    padding: 20px; 
+    position: relative;
+}
+
+.args-title { 
+    font-size: 0.8rem; color: var(--text-muted); display: block; 
+    margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.05em; 
+}
+
+.dynamic-input-row { 
+    display: grid; grid-template-columns: auto 1fr auto; 
+    gap: 15px; margin-bottom: 10px; align-items: center; 
+}
+
+.input-index-badge {
+    width: 50px; height: 42px; display: flex; align-items: center; justify-content: center;
+    background: var(--bg-deep); border: 1px solid var(--border); border-radius: 8px;
+    color: var(--primary); font-family: 'JetBrains Mono', monospace; font-weight: 700;
+}
+
+.code-input {
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.icon-btn-danger {
+    width: 42px; height: 42px; background: transparent; color: var(--text-muted);
+    border: 1px solid transparent; border-radius: 8px; cursor: pointer; transition: 0.2s;
+    display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+}
+.icon-btn-danger:hover { 
+    background: rgba(248, 113, 113, 0.1); 
+    color: var(--danger); 
+    border-color: var(--danger); 
+}
+
+.secondary-btn {
+    width: 100%; background: transparent; border: 1px dashed var(--border); color: var(--text-muted);
+    padding: 12px; border-radius: 8px; cursor: pointer; transition: 0.2s; margin-top: 10px;
+}
+.secondary-btn:hover { 
+    border-color: var(--primary); 
+    color: var(--primary); 
+    background: rgba(56, 189, 248, 0.05); 
+}
+
+.empty-args-msg {
+    font-size: 0.85rem; color: var(--text-muted); font-style: italic; margin-bottom: 10px; text-align: center;
+}
+
+/* --- FILE UPLOAD --- */
+.file-section { display: flex; flex-direction: column; width: 100%; }
+
+.file-upload-wrapper {
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg-deep); color: var(--text-main);
+    border: 1px solid var(--border); padding: 16px;
+    border-radius: 8px; cursor: pointer; font-weight: 600;
+    transition: all 0.2s ease; width: 100%; box-sizing: border-box;
+}
+
+.file-upload-wrapper:hover {
+    border-color: var(--primary); background: var(--bg-input); color: var(--primary);
+}
+
+.file-upload-wrapper .text-primary { color: var(--success); font-weight: 700; }
+
+/* --- BOTONES Y ESTADOS --- */
+.primary-btn {
+    background: var(--primary); color: white; border: none;
+    padding: 14px 24px; border-radius: 8px; font-weight: 700;
+    cursor: pointer; transition: 0.2s;
+}
+.primary-btn:hover { filter: brightness(1.1); }
+.primary-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.submit-btn { width: 100%; margin-top: 20px; }
+
+.cancel-btn { 
+    background: transparent; border: 1px solid var(--border); 
+    color: var(--text-muted); padding: 8px 16px; border-radius: 6px; 
+    cursor: pointer; transition: 0.2s;
+}
+.cancel-btn:hover { border-color: var(--danger); color: var(--danger); }
+
+.status-msg { margin: 20px 0; padding: 15px; border-radius: 8px; text-align: center; font-weight: 500; }
+.status-msg.success { background: rgba(74, 222, 128, 0.1); border: 1px solid var(--success); color: var(--success); }
+.status-msg.error { background: rgba(248, 113, 113, 0.1); border: 1px solid var(--danger); color: var(--danger); }
+
+/* Helpers */
+.hint-text { color: var(--text-muted); font-size: 0.75rem; display: block; margin-top: 5px; }
+.divider { border: 0; border-top: 1px solid var(--border); margin: 30px 0; opacity: 0.3; }
+
+/* Responsive */
+@media (max-width: 600px) {
+    .grid-2-col { grid-template-columns: 1fr; }
+}
+
+/* --- RESPONSIVE FORMS --- */
+@media (max-width: 768px) {
+    /* Convertir grids de 2 columnas a 1 columna */
+    .grid-2-col, .form-grid {
+        grid-template-columns: 1fr !important;
+        gap: 15px;
+    }
+
+    .mgmt-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .mgmt-header button {
+        width: 100%; /* Botón "Crear" ocupa todo el ancho */
+    }
+
+    .mgmt-card, .admin-card {
+        padding: 1.5rem; /* Menos padding interno */
+    }
+}
