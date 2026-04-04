@@ -1,0 +1,37 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Exercise {
+  id              Int        @id @default(autoincrement())
+  title           String
+  description     String
+  language        String     @default("mips")
+  teacherCode     String
+  teacherCodeMars String?
+  testbenchCode   String?
+  isVisible       Boolean    @default(true) // NUEVA PROPIEDAD
+  createdAt       DateTime   @default(now())
+  tests           TestCase[]
+}
+
+model TestCase {
+  id         Int      @id @default(autoincrement())
+  exerciseId Int
+  inputs     String
+  expected   String
+  // NUEVO: onDelete Cascade para permitir borrar ejercicios con tests
+  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade) 
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  password String
+  role     String @default("student")
+}
