@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Play, Save, Square, ArrowLeft, Trash2, X, CornerDownLeft, Terminal as TerminalIcon } from 'lucide-react';
+import { Play, Save, Square, ArrowLeft, Trash2, X, Terminal as TerminalIcon } from 'lucide-react';
 import Terminal from '../ide/Terminal';
 import { socket } from '../../services/socket';
 import { createTestCase, deleteTestCase } from '../../services/api';
@@ -46,21 +46,48 @@ const TestManager: React.FC<TestManagerProps> = ({ exercise, onBack, onRefresh }
     }
   };
 
+  const renderWithInputs = (rawText: string, inputsString: string) => {
+    if (!rawText) return null;
+    if (!inputsString) return rawText;
+    if (rawText === 'El programa no produjo ninguna salida.') return rawText;
+
+    const inputs = inputsString.split('\n').filter(Boolean);
+    let inputIndex = 0;
+
+    const parts = rawText.split(/([:?][ \t]*)/g);
+    const elements: React.ReactNode[] = [];
+
+    for (let i = 0; i < parts.length; i++) {
+      elements.push(parts[i]);
+      
+      if (/^[:?][ \t]*$/.test(parts[i]) && inputIndex < inputs.length) {
+        elements.push(
+          <span key={`input-${i}-${inputIndex}`} className="text-green-400 font-bold">
+            {inputs[inputIndex]}
+          </span>
+        );
+        
+        if (i + 1 < parts.length && !/^[\r\n]/.test(parts[i + 1])) {
+          elements.push('\n');
+        }
+        inputIndex++;
+      }
+    }
+
+    return elements;
+  };
+
   return (
-    // ARREGLO 1: Quitamos min-h-[700px] y forzamos overflow-hidden para evitar el "salto" de la barra de scroll.
     <div className="flex flex-col gap-6 h-full min-h-0 overflow-hidden text-zinc-100 antialiased">
       <button onClick={onBack} className="text-zinc-400 hover:text-white flex items-center gap-2 shrink-0 self-start w-fit transition-colors">
         <ArrowLeft size={20} /> Volver al gestor
       </button>
 
-      {/* ARREGLO 2: Añadimos flex-1 min-h-0 min-w-0 para acorazar el contenedor principal */}
       <div className="flex gap-6 flex-1 min-h-0 min-w-0">
         
-        {/* Panel Izquierdo: min-w-0 evita que las salidas largas de la terminal ensanchen la pantalla */}
         <div className="flex-1 flex flex-col min-w-0 bg-zinc-900 border border-zinc-800 rounded-lg p-6 shadow-sm">
           
           <div className="flex justify-between items-center mb-6 shrink-0 border-b border-zinc-800 pb-4 gap-4">
-            {/* ARREGLO 3: break-words y min-w-0 permiten que el título salte de línea sin empujar los botones */}
             <h1 className="text-xl font-bold text-green-400 flex-1 min-w-0 break-words">
               Nuevo Test: {exercise.title}
             </h1>
@@ -75,7 +102,6 @@ const TestManager: React.FC<TestManagerProps> = ({ exercise, onBack, onRefresh }
             </div>
           </div>
 
-          {/* ARREGLO 4: Contenedor de la terminal con min-h-0 min-w-0 para que todo el scroll se quede dentro */}
           <div className="flex-1 flex flex-col min-h-0 min-w-0 bg-black border border-zinc-800 rounded relative overflow-hidden">
             <Terminal onInput={(d) => setRecordedInput(p => p + d)} onOutput={(d) => setRecordedOutput(p => p + d)} onFinish={() => setIsRunning(false)} />
             {isRunning && (
@@ -86,7 +112,6 @@ const TestManager: React.FC<TestManagerProps> = ({ exercise, onBack, onRefresh }
           </div>
         </div>
 
-        {/* Panel Derecho: shrink-0 garantiza que esta columna NUNCA se aplaste, siempre medirá w-80 */}
         <div className="w-80 shrink-0 flex flex-col min-h-0 bg-zinc-900 border border-zinc-800 rounded-lg p-6 shadow-sm">
           <h2 className="text-lg font-bold text-zinc-300 border-b border-zinc-800 pb-4 mb-4 shrink-0">Tests ({exercise.tests?.length || 0})</h2>
           <div className="flex-1 overflow-y-auto pr-2 space-y-3 custom-scrollbar min-h-0">
@@ -117,25 +142,22 @@ const TestManager: React.FC<TestManagerProps> = ({ exercise, onBack, onRefresh }
               </button>
             </div>
             
-            <div className="p-6 flex-1 overflow-y-auto bg-[#0a0a0a] rounded-b-lg flex flex-col gap-6">
+            <div className="p-6 flex-1 overflow-y-auto bg-[#0a0a0a] rounded-b-lg flex flex-col gap-5">
               
-              <div className="flex flex-col gap-3">
-                <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider block">
-                  Inputs Simulados
-                </span>
-                <div className="bg-black border border-zinc-800 rounded-md p-4 flex flex-wrap gap-2 items-center min-h-[60px] shadow-inner">
-                  {viewedTest.test.inputs ? (
-                    viewedTest.test.inputs.split('\n').filter(Boolean).map((inp, i) => (
-                      <span key={i} className="text-green-400 font-mono text-sm font-bold flex items-center gap-1.5 bg-green-500/10 px-2.5 py-1 rounded border border-green-500/20">
+              {viewedTest.test.inputs && viewedTest.test.inputs.trim() !== '' && (
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 bg-zinc-900/40 border border-zinc-800/60 rounded-md p-2.5 shrink-0">
+                  <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider shrink-0">
+                    Valores de Entrada:
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {viewedTest.test.inputs.split('\n').filter(Boolean).map((inp, i) => (
+                      <span key={i} className="text-green-400 font-mono text-xs font-bold bg-green-500/10 px-2 py-0.5 rounded border border-green-500/20">
                         {inp}
-                        <CornerDownLeft size={14} className="text-green-600" />
                       </span>
-                    ))
-                  ) : (
-                    <span className="text-zinc-600 italic text-sm">Este test no requiere inputs por teclado.</span>
-                  )}
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div className="flex flex-col gap-3 flex-1 min-h-0">
                 <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider block">
@@ -143,7 +165,7 @@ const TestManager: React.FC<TestManagerProps> = ({ exercise, onBack, onRefresh }
                 </span>
                 <div className="bg-black border border-zinc-800 rounded-md shadow-inner flex-1 overflow-hidden flex flex-col">
                   <pre className="p-5 text-zinc-300 font-mono text-sm overflow-auto whitespace-pre leading-relaxed custom-scrollbar flex-1">
-                    {viewedTest.test.expected}
+                    {renderWithInputs(viewedTest.test.expected, viewedTest.test.inputs)}
                   </pre>
                 </div>
               </div>

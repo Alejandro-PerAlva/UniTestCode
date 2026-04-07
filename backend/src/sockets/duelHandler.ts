@@ -4,7 +4,6 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 import { prisma } from '../services/db.js';
-// IMPORTANTE: Añadida la importación de evaluateMips
 import { buildExecutionCodes, evaluateMips } from '../services/evaluator.js';
 import { interceptMarsError } from './utils.js';
 
@@ -17,7 +16,6 @@ export const setupDuelHandler = (socket: Socket) => {
   let duelStudentPath = '';
   let duelTeacherPath = '';
 
-  // --- LÓGICA EXISTENTE DEL DUELO (INTACTA) ---
   socket.on("start_duel", async ({ studentCode, exerciseId, targetFunction }) => {
     if (duelStudentProcess) duelStudentProcess.kill('SIGKILL');
     if (duelTeacherProcess) duelTeacherProcess.kill('SIGKILL');
@@ -73,6 +71,10 @@ export const setupDuelHandler = (socket: Socket) => {
   socket.on("duel_input", (data: string) => {
     if (duelStudentProcess && duelStudentProcess.stdin) duelStudentProcess.stdin.write(data);
     if (duelTeacherProcess && duelTeacherProcess.stdin) duelTeacherProcess.stdin.write(data);
+    
+    // LA SOLUCIÓN: Hacemos "eco" del input a la terminal del profesor
+    // Lo pintamos de verde (\x1b[32m) e inyectamos el salto de línea para que quede clavado.
+    socket.emit("duel_teacher_output", `\x1b[32m${data}\x1b[0m`);
   });
 
   socket.on("stop_duel", () => {
@@ -87,16 +89,14 @@ export const setupDuelHandler = (socket: Socket) => {
     if (fs.existsSync(duelTeacherPath)) fs.unlinkSync(duelTeacherPath);
   });
 
-  // --- NUEVA LÓGICA: EJECUCIÓN AISLADA DE UN TEST ---
+  // PRUEBAS UNITARIAS (Aisladas)
   socket.on("run_single_test", async ({ studentCode, exerciseId, testIndex }) => {
     try {
-      // Cargamos el ejercicio con sus tests
       const exercise = await prisma.exercise.findUnique({
         where: { id: exerciseId },
-        include: { tests: true } // Extrae los tests asociados
+        include: { tests: true } 
       });
 
-      // Validaciones de seguridad
       if (!exercise || !exercise.tests || !exercise.tests[testIndex]) {
         socket.emit('single_test_result', { passed: false, error: 'Test no encontrado', testIndex });
         return;
@@ -105,10 +105,8 @@ export const setupDuelHandler = (socket: Socket) => {
       const test = exercise.tests[testIndex];
       let finalStudentCode = "";
 
-      // 1. Preparación del código (Trasplante si existe etiqueta mágica o _EVALUADOR_)
       try {
         const codeToUse = exercise.teacherCodeMars || exercise.teacherCode || "";
-        // Nota: any casteo rápido por si targetFunction no está tipado en este modelo local
         const targetFn = (exercise as any).targetFunction || undefined; 
         const codes = buildExecutionCodes(studentCode, codeToUse, targetFn);
         finalStudentCode = codes.finalStudentCode;
@@ -122,15 +120,12 @@ export const setupDuelHandler = (socket: Socket) => {
         return;
       }
 
-      // 2. Ejecución aislada con evaluateMips
       const inputs = test.inputs ? test.inputs.split('\n').filter(Boolean) : [];
       const result = await evaluateMips(finalStudentCode, inputs);
 
-      // 3. Comparación estricta
       const normalize = (str: string) => str.replace(/\r\n/g, '\n').trim();
       const passed = normalize(result.resultado) === normalize(test.expected);
 
-      // 4. Devolver resultado al frontend
       socket.emit('single_test_result', {
         passed,
         expected: test.expected,

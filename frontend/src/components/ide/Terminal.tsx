@@ -28,6 +28,9 @@ const Terminal: React.FC<TerminalProps> = ({
   const onInputRef = useRef(onInput);
   const onOutputRef = useRef(onOutput);
   const onFinishRef = useRef(onFinish);
+  
+  // NUEVO: Buffer para agrupar las pulsaciones y permitir borrar antes de enviar
+  const inputBuffer = useRef('');
 
   useEffect(() => {
     onInputRef.current = onInput;
@@ -78,10 +81,34 @@ const Terminal: React.FC<TerminalProps> = ({
 
     if (!readOnly) {
       term.onData((data) => {
-        const toSend = data === '\r' ? '\n' : data;
-        socket.emit(inputEvent, toSend);
-        term.write(data === '\r' ? '\r\n' : data);
-        if (onInputRef.current) onInputRef.current(toSend);
+        // 1. Manejo de Backspace (Borrar)
+        if (data === '\x7f') {
+          if (inputBuffer.current.length > 0) {
+            inputBuffer.current = inputBuffer.current.slice(0, -1);
+            term.write('\b \b'); // Retrocede, pinta un espacio en blanco y vuelve a retroceder
+          }
+          return;
+        }
+        
+        // 2. Manejo de Intro (Enter) o pegado de múltiples líneas
+        if (data.includes('\r') || data.includes('\n')) {
+          const cleanData = data.replace(/\r/g, '\n');
+          const toSend = inputBuffer.current + cleanData;
+          
+          socket.emit(inputEvent, toSend);
+          
+          // Pintamos el salto de línea visualmente
+          term.write(cleanData.replace(/\n/g, '\r\n'));
+          
+          if (onInputRef.current) onInputRef.current(toSend);
+          inputBuffer.current = ''; // Vaciamos el buffer
+        } 
+        // 3. Letras y números normales
+        else {
+          inputBuffer.current += data;
+          // Pintamos el carácter en verde brillante
+          term.write(`\x1b[32m${data}\x1b[0m`);
+        }
       });
     }
 
