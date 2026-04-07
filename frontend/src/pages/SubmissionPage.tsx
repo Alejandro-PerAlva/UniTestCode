@@ -5,7 +5,7 @@ import type { Exercise } from '../types';
 
 import EvaluatorForm from '../components/evaluator/EvaluatorForm';
 import ResultsBoard from '../components/evaluator/ResultsBoard';
-import TestDetailModal from '../components/evaluator/TestDetailModal';
+import TestDetailModal from '../components/shared/TestDetailModal';
 import DescriptionModal from '../components/shared/DescriptionModal';
 
 const SubmissionPage: React.FC = () => {

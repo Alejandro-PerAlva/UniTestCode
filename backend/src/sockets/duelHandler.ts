@@ -4,7 +4,8 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 import { prisma } from '../services/db.js';
-import { buildExecutionCodes } from '../services/evaluator.js';
+// IMPORTANTE: Añadida la importación de evaluateMips
+import { buildExecutionCodes, evaluateMips } from '../services/evaluator.js';
 import { interceptMarsError } from './utils.js';
 
 const tempDir = path.join(os.tmpdir(), 'mips_evaluator_temp');
@@ -16,6 +17,7 @@ export const setupDuelHandler = (socket: Socket) => {
   let duelStudentPath = '';
   let duelTeacherPath = '';
 
+  // --- LÓGICA EXISTENTE DEL DUELO (INTACTA) ---
   socket.on("start_duel", async ({ studentCode, exerciseId, targetFunction }) => {
     if (duelStudentProcess) duelStudentProcess.kill('SIGKILL');
     if (duelTeacherProcess) duelTeacherProcess.kill('SIGKILL');
@@ -83,5 +85,68 @@ export const setupDuelHandler = (socket: Socket) => {
     if (duelTeacherProcess) duelTeacherProcess.kill('SIGKILL');
     if (fs.existsSync(duelStudentPath)) fs.unlinkSync(duelStudentPath);
     if (fs.existsSync(duelTeacherPath)) fs.unlinkSync(duelTeacherPath);
+  });
+
+  // --- NUEVA LÓGICA: EJECUCIÓN AISLADA DE UN TEST ---
+  socket.on("run_single_test", async ({ studentCode, exerciseId, testIndex }) => {
+    try {
+      // Cargamos el ejercicio con sus tests
+      const exercise = await prisma.exercise.findUnique({
+        where: { id: exerciseId },
+        include: { tests: true } // Extrae los tests asociados
+      });
+
+      // Validaciones de seguridad
+      if (!exercise || !exercise.tests || !exercise.tests[testIndex]) {
+        socket.emit('single_test_result', { passed: false, error: 'Test no encontrado', testIndex });
+        return;
+      }
+
+      const test = exercise.tests[testIndex];
+      let finalStudentCode = "";
+
+      // 1. Preparación del código (Trasplante si existe etiqueta mágica o _EVALUADOR_)
+      try {
+        const codeToUse = exercise.teacherCodeMars || exercise.teacherCode || "";
+        // Nota: any casteo rápido por si targetFunction no está tipado en este modelo local
+        const targetFn = (exercise as any).targetFunction || undefined; 
+        const codes = buildExecutionCodes(studentCode, codeToUse, targetFn);
+        finalStudentCode = codes.finalStudentCode;
+      } catch (err: any) {
+        socket.emit("single_test_result", {
+          passed: false,
+          error: `Error al preparar el código: ${err.message}`,
+          testIndex,
+          originalTest: test
+        });
+        return;
+      }
+
+      // 2. Ejecución aislada con evaluateMips
+      const inputs = test.inputs ? test.inputs.split('\n').filter(Boolean) : [];
+      const result = await evaluateMips(finalStudentCode, inputs);
+
+      // 3. Comparación estricta
+      const normalize = (str: string) => str.replace(/\r\n/g, '\n').trim();
+      const passed = normalize(result.resultado) === normalize(test.expected);
+
+      // 4. Devolver resultado al frontend
+      socket.emit('single_test_result', {
+        passed,
+        expected: test.expected,
+        output: result.resultado,
+        error: result.error,
+        testIndex,
+        originalTest: test
+      });
+
+    } catch (err: any) {
+      socket.emit('single_test_result', {
+        passed: false,
+        error: `Error crítico de ejecución: ${err.message}`,
+        testIndex,
+        originalTest: null
+      });
+    }
   });
 };
