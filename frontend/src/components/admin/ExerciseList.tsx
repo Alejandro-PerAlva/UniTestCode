@@ -1,6 +1,6 @@
-import React, { useRef, type ChangeEvent } from 'react';
+import React from 'react';
 import { PlusCircle, Edit, Trash2, Eye, EyeOff, Terminal as TerminalIcon, Download, Upload } from 'lucide-react';
-import { updateExercise, deleteExercise, importExercisesData } from '../../services/api';
+import { useExerciseListLogic } from '../../hooks/admin/useExerciseListLogic';
 import type { Exercise } from '../../types';
 
 interface ExerciseListProps {
@@ -12,59 +12,7 @@ interface ExerciseListProps {
 }
 
 const ExerciseList: React.FC<ExerciseListProps> = ({ exercises, onRefresh, onCreateNew, onEdit, onManageTests }) => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleDeleteExercise = async (id: number) => {
-    if (!window.confirm("¿Estás seguro de borrar este ejercicio y todos sus tests?")) return;
-    try {
-      await deleteExercise(id);
-      onRefresh();
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handleToggleVisibility = async (exercise: Exercise) => {
-    try {
-      await updateExercise(exercise.id, { isVisible: !(exercise.isVisible ?? true) });
-      onRefresh();
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handleExport = () => {
-    const dataStr = JSON.stringify(exercises, null, 2);
-    const blob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `backup_ejercicios_${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
-
-  const handleImport = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-      try {
-        const importedData = JSON.parse(event.target?.result as string);
-        const result = await importExercisesData(importedData);
-        onRefresh();
-        alert(`Importación completada: ${result.imported} añadidos, ${result.skipped} omitidos (ya existían).`);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      } catch (error) {
-        alert('Error al importar el archivo JSON');
-      }
-    };
-    reader.readAsText(file);
-    if (fileInputRef.current) fileInputRef.current.value = '';
-  };
+  const { fileInputRef, handleDeleteExercise, handleToggleVisibility, handleExport, handleImport } = useExerciseListLogic(exercises, onRefresh);
 
   return (
     <div className="flex flex-col gap-6">
@@ -92,9 +40,7 @@ const ExerciseList: React.FC<ExerciseListProps> = ({ exercises, onRefresh, onCre
             <div className="flex-1 mr-4">
               <div className="flex items-center gap-3">
                 <h3 className="text-xl font-bold">{ex.title}</h3>
-                {ex.isVisible === false && (
-                  <span className="bg-yellow-900/50 text-yellow-500 text-xs px-2 py-0.5 rounded font-bold border border-yellow-700/50">Oculto</span>
-                )}
+                {ex.isVisible === false && <span className="bg-yellow-900/50 text-yellow-500 text-xs px-2 py-0.5 rounded font-bold border border-yellow-700/50">Oculto</span>}
               </div>
               <p className="text-gray-400 text-sm mt-1 line-clamp-2">{ex.description}</p>
               <span className="inline-block mt-3 bg-gray-800 text-xs px-2 py-1 rounded text-gray-300 border border-gray-700">

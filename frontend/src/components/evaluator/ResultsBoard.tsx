@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import { CheckCircle, XCircle } from 'lucide-react';
+import type { SubmissionResponse, TestResult } from '../../types';
 
 interface ResultsBoardProps {
-  evalData: any;
+  evalData: SubmissionResponse;
   onViewTest: (index: number) => void;
 }
 
@@ -14,7 +14,7 @@ const ResultsBoard: React.FC<ResultsBoardProps> = ({ evalData, onViewTest }) => 
         Resultados de la Ejecución
         {evalData.success && (
           <span className={`text-sm py-1 px-3 rounded-full ${evalData.allPassed ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300'}`}>
-            {evalData.results?.filter((r: any) => r.passed).length} / {evalData.results?.length} Tests Superados
+            {evalData.results?.filter((r: TestResult) => r.passed).length} / {evalData.results?.length} Tests Superados
           </span>
         )}
       </h3>
@@ -25,7 +25,7 @@ const ResultsBoard: React.FC<ResultsBoardProps> = ({ evalData, onViewTest }) => 
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {evalData.results.map((res: any, index: number) => (
+          {evalData.results?.map((res: TestResult, index: number) => (
             <div 
               key={index} 
               onClick={() => onViewTest(index)}

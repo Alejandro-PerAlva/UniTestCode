@@ -1,17 +1,10 @@
 import React from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
-import { Code2, Upload, Settings, LogOut, Home } from 'lucide-react';
-import { getUser, clearAuthData, isTeacher } from '../../services/auth';
+import { NavLink } from 'react-router-dom';
+import { Code2, Upload, Settings, LogOut } from 'lucide-react';
+import { useNavbarLogic } from '../../hooks/layout/useNavbarLogic';
 
 const Navbar: React.FC = () => {
-  const navigate = useNavigate();
-  const user = getUser();
-  const userIsTeacher = isTeacher();
-
-  const handleLogout = () => {
-    clearAuthData();
-    window.location.href = '/login'; 
-  };
+  const { user, userIsTeacher, handleLogout } = useNavbarLogic();
 
   return (
     <nav className="h-16 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-6 shrink-0 text-white">

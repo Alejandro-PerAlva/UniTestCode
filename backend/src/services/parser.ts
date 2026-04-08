@@ -1,15 +1,5 @@
-export const normalizeSpimToMars = (code: string): string => {
-    if (!code) return "";
-
-    let cleanCode = code.replace(/\xA0/g, ' ');
-    cleanCode = cleanCode.replace(/\$s8\b/g, '$fp');
-
-    cleanCode = cleanCode.replace(/;\s*(?=#|\r?\n|$)/g, '');
-
-    cleanCode = cleanCode.replace(/\.word\s+0x([0-9a-fA-F]{8})([0-9a-fA-F]{8})\b/gi, '.word 0x$1, 0x$2');
-
-    const printMatrizHexRegex = /print_matriz:[\s\S]*?print_matriz__MARCAFIN:/;
-    const printMatrizMips = `print_matriz:
+const PRINT_MATRIZ_HEX_REGEX = /print_matriz:[\s\S]*?print_matriz__MARCAFIN:/;
+const PRINT_MATRIZ_MIPS = `print_matriz:
     addi $sp, $sp, -24
     sw $ra, 0($sp)
     sw $s0, 4($sp)
@@ -70,55 +60,82 @@ pm_forF_fin:
     jr $ra
 print_matriz__MARCAFIN:`;
 
-    cleanCode = cleanCode.replace(printMatrizHexRegex, printMatrizMips);
+const cleanBasicSyntax = (code: string): string => {
+    let clean = code.replace(/\xA0/g, ' ');
+    clean = clean.replace(/\$s8\b/g, '$fp');
+    clean = clean.replace(/;\s*(?=#|\r?\n|$)/g, '');
+    clean = clean.replace(/\.word\s+0x([0-9a-fA-F]{8})([0-9a-fA-F]{8})\b/gi, '.word 0x$1, 0x$2');
+    return clean;
+};
 
-    const constants: {name: string, value: string}[] = [];
-    cleanCode = cleanCode.replace(/^[ \t]*([a-zA-Z_]\w*)[ \t]*=[ \t]*(-?\d+)[^\n\r]*/gm, (match, name, value) => {
+const resolveConstants = (code: string): string => {
+    const constants: { name: string, value: string }[] = [];
+    let clean = code.replace(/^[ \t]*([a-zA-Z_]\w*)[ \t]*=[ \t]*(-?\d+)[^\n\r]*/gm, (_, name, value) => {
         constants.push({ name, value });
         return ''; 
     });
 
     constants.forEach(c => {
         const regex = new RegExp(`\\b${c.name}\\b`, 'g');
-        cleanCode = cleanCode.replace(regex, c.value);
+        clean = clean.replace(regex, c.value);
     });
+    return clean;
+};
 
-    cleanCode = cleanCode.replace(/\b(addi)\s+(\$[a-z0-9]{1,2})\s*,\s*(-?\d+)\b/gi, '$1 $2, $2, $3');
+const fixAddiShortcuts = (code: string): string => {
+    return code.replace(/\b(addi)\s+(\$[a-z0-9]{1,2})\s*,\s*(-?\d+)\b/gi, '$1 $2, $2, $3');
+};
 
+const extractInlineFloats = (code: string): string => {
     let dataSection = '\n\n.data\n';
     let dataAdded = false;
     let floatCounter = 0;
     let doubleCounter = 0;
     const uid = Math.random().toString(36).substring(2, 8);
 
-    cleanCode = cleanCode.replace(/li\.d[ \t]+(\$f\d+)[ \t]*,[ \t]*([-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)/ig, (match, reg, val) => {
+    let clean = code.replace(/li\.d[ \t]+(\$f\d+)[ \t]*,[ \t]*([-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)/ig, (_, reg, val) => {
         const label = `_auto_double_${uid}_${doubleCounter++}`;
         dataSection += `${label}: .double ${val}\n`;
         dataAdded = true;
         return `l.d ${reg}, ${label}`;
     });
 
-    cleanCode = cleanCode.replace(/li\.s[ \t]+(\$f\d+)[ \t]*,[ \t]*([-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)/ig, (match, reg, val) => {
+    clean = clean.replace(/li\.s[ \t]+(\$f\d+)[ \t]*,[ \t]*([-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)/ig, (_, reg, val) => {
         const label = `_auto_float_${uid}_${floatCounter++}`;
         dataSection += `${label}: .float ${val}\n`;
         dataAdded = true;
         return `l.s ${reg}, ${label}`;
     });
 
-    if (dataAdded) {
-        cleanCode += dataSection; 
-    }
+    return dataAdded ? clean + dataSection : clean;
+};
 
-    cleanCode = cleanCode.replace(/\b(l\.d|s\.d)\s+\$f(\d+)\s*,\s*(-?\d+)?\s*\(\s*(\$[a-z0-9]+)\s*\)/gi, (match, instr, reg, offset, base) => {
+const fixDoubleMemoryAccess = (code: string): string => {
+    return code.replace(/\b(l\.d|s\.d)\s+\$f(\d+)\s*,\s*(-?\d+)?\s*\(\s*(\$[a-z0-9]+)\s*\)/gi, (_, instr, reg, offset, base) => {
         const regNum = parseInt(reg);
         const offNum = offset ? parseInt(offset) : 0;
         const op = instr.toLowerCase() === 'l.d' ? 'lwc1' : 'swc1';
         return `${op} $f${regNum}, ${offNum}(${base})\n\t${op} $f${regNum + 1}, ${offNum + 4}(${base})`;
     });
+};
 
-    if (cleanCode.match(/\bmain[ \t]*:/)) {
-        cleanCode = "\n.text\nj main\n" + cleanCode;
+const ensureEntryPoint = (code: string): string => {
+    if (code.match(/\bmain[ \t]*:/)) {
+        return "\n.text\nj main\n" + code;
     }
+    return code;
+};
 
-    return cleanCode;
+export const normalizeSpimToMars = (code: string): string => {
+    if (!code) return "";
+
+    let result = cleanBasicSyntax(code);
+    result = result.replace(PRINT_MATRIZ_HEX_REGEX, PRINT_MATRIZ_MIPS);
+    result = resolveConstants(result);
+    result = fixAddiShortcuts(result);
+    result = extractInlineFloats(result);
+    result = fixDoubleMemoryAccess(result);
+    result = ensureEntryPoint(result);
+
+    return result;
 };

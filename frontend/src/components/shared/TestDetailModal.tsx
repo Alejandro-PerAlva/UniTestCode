@@ -1,47 +1,17 @@
 import React from 'react';
 import { CheckCircle, XCircle, X } from 'lucide-react';
-import type { TestCase } from '../../types';
+import { useTestFormatter } from '../../hooks/shared/useTestFormatter';
+import type { TestCase, TestResultPayload } from '../../types';
 
 interface TestDetailModalProps {
-  result: any;
+  result: TestResultPayload; // ¡Adiós any!
   originalTest: TestCase | undefined;
   testIndex: number;
   onClose: () => void;
 }
 
 const TestDetailModal: React.FC<TestDetailModalProps> = ({ result, originalTest, testIndex, onClose }) => {
-
-  const renderWithInputs = (rawText: string, inputsString: string) => {
-    if (!rawText) return null;
-    if (!inputsString) return rawText;
-    if (rawText === 'El programa no produjo ninguna salida.') return rawText;
-
-    const inputs = inputsString.split('\n').filter(Boolean);
-    let inputIndex = 0;
-
-    const parts = rawText.split(/([:?][ \t]*)/g);
-    const elements: React.ReactNode[] = [];
-
-    for (let i = 0; i < parts.length; i++) {
-      elements.push(parts[i]);
-      
-      if (/^[:?][ \t]*$/.test(parts[i]) && inputIndex < inputs.length) {
-        elements.push(
-          <span key={`input-${i}-${inputIndex}`} className="text-green-400 font-bold">
-            {inputs[inputIndex]}
-          </span>
-        );
-        
-        if (i + 1 < parts.length && !/^[\r\n]/.test(parts[i + 1])) {
-          elements.push('\n');
-        }
-        inputIndex++;
-      }
-    }
-
-    return elements;
-  };
-
+  const { renderWithInputs } = useTestFormatter();
   const sharedInputs = originalTest?.inputs ? originalTest.inputs.split('\n').filter(Boolean) : [];
 
   return (

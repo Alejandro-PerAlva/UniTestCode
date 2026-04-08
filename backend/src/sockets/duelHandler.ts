@@ -1,18 +1,18 @@
 import { Socket } from 'socket.io';
-import { spawn } from 'child_process';
-import fs from 'fs';
+import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
 import path from 'path';
 import os from 'os';
+import fs from 'fs';
 import { prisma } from '../services/db.js';
 import { buildExecutionCodes, evaluateMips } from '../services/evaluator.js';
-import { interceptMarsError } from './utils.js';
+import { interceptMarsError, safeDeleteFile } from './utils.js';
 
 const tempDir = path.join(os.tmpdir(), 'mips_evaluator_temp');
 if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
 
 export const setupDuelHandler = (socket: Socket) => {
-  let duelStudentProcess: any = null;
-  let duelTeacherProcess: any = null;
+  let duelStudentProcess: ChildProcessWithoutNullStreams | null = null;
+  let duelTeacherProcess: ChildProcessWithoutNullStreams | null = null;
   let duelStudentPath = '';
   let duelTeacherPath = '';
 
@@ -31,8 +31,9 @@ export const setupDuelHandler = (socket: Socket) => {
       const codes = buildExecutionCodes(studentCode, codeToUse, targetFunction);
       finalStudentCode = codes.finalStudentCode;
       finalTeacherCode = codeToUse;
-    } catch (err: any) {
-      socket.emit("duel_student_output", `\r\n\x1b[31m[ERROR]: ${err.message}\x1b[0m\r\n`);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Error desconocido';
+      socket.emit("duel_student_output", `\r\n\x1b[31m[ERROR]: ${errorMessage}\x1b[0m\r\n`);
       socket.emit("duel_student_finished");
       return;
     }
@@ -43,8 +44,8 @@ export const setupDuelHandler = (socket: Socket) => {
     duelStudentPath = path.join(tempDir, studentFileName);
     duelTeacherPath = path.join(tempDir, teacherFileName);
 
-    fs.writeFileSync(duelStudentPath, finalStudentCode);
-    fs.writeFileSync(duelTeacherPath, finalTeacherCode);
+    await fs.promises.writeFile(duelStudentPath, finalStudentCode);
+    await fs.promises.writeFile(duelTeacherPath, finalTeacherCode);
 
     const marsPath = path.join(process.cwd(), 'bin', 'Mars45.jar'); 
 
@@ -57,14 +58,14 @@ export const setupDuelHandler = (socket: Socket) => {
     duelTeacherProcess.stdout.on('data', (data: Buffer) => socket.emit("duel_teacher_output", data.toString()));
     duelTeacherProcess.stderr.on('data', (data: Buffer) => socket.emit("duel_teacher_output", interceptMarsError(data)));
 
-    duelStudentProcess.on('close', () => {
+    duelStudentProcess.on('close', async () => {
       socket.emit("duel_student_finished");
-      if (fs.existsSync(duelStudentPath)) fs.unlinkSync(duelStudentPath);
+      await safeDeleteFile(duelStudentPath);
     });
 
-    duelTeacherProcess.on('close', () => {
+    duelTeacherProcess.on('close', async () => {
       socket.emit("duel_teacher_finished");
-      if (fs.existsSync(duelTeacherPath)) fs.unlinkSync(duelTeacherPath);
+      await safeDeleteFile(duelTeacherPath);
     });
   });
 
@@ -72,8 +73,6 @@ export const setupDuelHandler = (socket: Socket) => {
     if (duelStudentProcess && duelStudentProcess.stdin) duelStudentProcess.stdin.write(data);
     if (duelTeacherProcess && duelTeacherProcess.stdin) duelTeacherProcess.stdin.write(data);
     
-    // LA SOLUCIÓN: Hacemos "eco" del input a la terminal del profesor
-    // Lo pintamos de verde (\x1b[32m) e inyectamos el salto de línea para que quede clavado.
     socket.emit("duel_teacher_output", `\x1b[32m${data}\x1b[0m`);
   });
 
@@ -82,14 +81,13 @@ export const setupDuelHandler = (socket: Socket) => {
     if (duelTeacherProcess) duelTeacherProcess.kill('SIGKILL');
   });
 
-  socket.on("disconnect", () => {
+  socket.on("disconnect", async () => {
     if (duelStudentProcess) duelStudentProcess.kill('SIGKILL');
     if (duelTeacherProcess) duelTeacherProcess.kill('SIGKILL');
-    if (fs.existsSync(duelStudentPath)) fs.unlinkSync(duelStudentPath);
-    if (fs.existsSync(duelTeacherPath)) fs.unlinkSync(duelTeacherPath);
+    await safeDeleteFile(duelStudentPath);
+    await safeDeleteFile(duelTeacherPath);
   });
 
-  // PRUEBAS UNITARIAS (Aisladas)
   socket.on("run_single_test", async ({ studentCode, exerciseId, testIndex }) => {
     try {
       const exercise = await prisma.exercise.findUnique({
@@ -110,10 +108,11 @@ export const setupDuelHandler = (socket: Socket) => {
         const targetFn = (exercise as any).targetFunction || undefined; 
         const codes = buildExecutionCodes(studentCode, codeToUse, targetFn);
         finalStudentCode = codes.finalStudentCode;
-      } catch (err: any) {
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'Error desconocido';
         socket.emit("single_test_result", {
           passed: false,
-          error: `Error al preparar el código: ${err.message}`,
+          error: `Error al preparar el código: ${errorMessage}`,
           testIndex,
           originalTest: test
         });
@@ -135,10 +134,11 @@ export const setupDuelHandler = (socket: Socket) => {
         originalTest: test
       });
 
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Error desconocido';
       socket.emit('single_test_result', {
         passed: false,
-        error: `Error crítico de ejecución: ${err.message}`,
+        error: `Error crítico de ejecución: ${errorMessage}`,
         testIndex,
         originalTest: null
       });

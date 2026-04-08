@@ -1,39 +1,15 @@
-import { useEffect, useState, type JSX } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useAppLogic } from './hooks/core/useAppLogic';
 import Navbar from './components/layout/Navbar';
+import { ProtectedRoute, TeacherRoute } from './components/layout/RouteGuards';
 import HomePage from './pages/HomePage';
 import IdePage from './pages/IdePage';
 import SubmissionPage from './pages/SubmissionPage';
 import AdminPage from './pages/AdminPage';
 import LoginPage from './pages/LoginPage';
-import { socket } from './services/socket';
-import { isAuthenticated, isTeacher } from './services/auth';
-
-const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
-  if (!isAuthenticated()) return <Navigate to="/login" replace />;
-  return children;
-};
-
-const TeacherRoute = ({ children }: { children: JSX.Element }) => {
-  if (!isAuthenticated()) return <Navigate to="/login" replace />;
-  if (!isTeacher()) return <Navigate to="/home" replace />;
-  return children;
-};
 
 function App() {
-  const [isAuth, setIsAuth] = useState(isAuthenticated());
-
-  useEffect(() => {
-    const handleAuthChange = () => setIsAuth(isAuthenticated());
-    window.addEventListener('auth_change', handleAuthChange);
-
-    socket.connect();
-
-    return () => {
-      window.removeEventListener('auth_change', handleAuthChange);
-      socket.disconnect();
-    };
-  }, []);
+  const { isAuth } = useAppLogic();
 
   return (
     <Router>

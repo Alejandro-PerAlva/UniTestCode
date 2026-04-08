@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { Play, Save, Square, ArrowLeft, Trash2, X, Terminal as TerminalIcon } from 'lucide-react';
+import React from 'react';
+import { Play, Save, Square, ArrowLeft, Trash2 } from 'lucide-react';
 import Terminal from '../ide/Terminal';
-import { socket } from '../../services/socket';
-import { createTestCase, deleteTestCase } from '../../services/api';
-import type { Exercise, TestCase } from '../../types';
+import { useTestManagerLogic } from '../../hooks/admin/useTestManagerLogic';
+import TestPlaybackModal from '../shared/TestPlaybackModal';
+import type { Exercise } from '../../types';
 
 interface TestManagerProps {
   exercise: Exercise;
@@ -12,70 +12,18 @@ interface TestManagerProps {
 }
 
 const TestManager: React.FC<TestManagerProps> = ({ exercise, onBack, onRefresh }) => {
-  const [isRunning, setIsRunning] = useState(false);
-  const [recordedInput, setRecordedInput] = useState('');
-  const [recordedOutput, setRecordedOutput] = useState('');
-  const [viewedTest, setViewedTest] = useState<{test: TestCase, index: number} | null>(null);
-
-  const startRecording = () => {
-    if (!exercise?.teacherCode) return;
-    setRecordedInput('');
-    setRecordedOutput('');
-    setIsRunning(true);
-    socket.emit('start_run', exercise.teacherCode);
-  };
-
-  const handleSaveTest = async () => {
-    if (!recordedOutput) return;
-    try {
-      await createTestCase(exercise.id, recordedInput, recordedOutput);
-      setRecordedInput('');
-      setRecordedOutput('');
-      onRefresh(); 
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handleDeleteTest = async (testId: number) => {
-    try {
-      await deleteTestCase(exercise.id, testId);
-      onRefresh();
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const renderWithInputs = (rawText: string, inputsString: string) => {
-    if (!rawText) return null;
-    if (!inputsString) return rawText;
-    if (rawText === 'El programa no produjo ninguna salida.') return rawText;
-
-    const inputs = inputsString.split('\n').filter(Boolean);
-    let inputIndex = 0;
-
-    const parts = rawText.split(/([:?][ \t]*)/g);
-    const elements: React.ReactNode[] = [];
-
-    for (let i = 0; i < parts.length; i++) {
-      elements.push(parts[i]);
-      
-      if (/^[:?][ \t]*$/.test(parts[i]) && inputIndex < inputs.length) {
-        elements.push(
-          <span key={`input-${i}-${inputIndex}`} className="text-green-400 font-bold">
-            {inputs[inputIndex]}
-          </span>
-        );
-        
-        if (i + 1 < parts.length && !/^[\r\n]/.test(parts[i + 1])) {
-          elements.push('\n');
-        }
-        inputIndex++;
-      }
-    }
-
-    return elements;
-  };
+  const {
+    isRunning,
+    setIsRunning,
+    setRecordedInput,
+    recordedOutput,
+    setRecordedOutput,
+    viewedTest,
+    setViewedTest,
+    startRecording,
+    handleSaveTest,
+    handleDeleteTest
+  } = useTestManagerLogic(exercise, onRefresh);
 
   return (
     <div className="flex flex-col gap-6 h-full min-h-0 overflow-hidden text-zinc-100 antialiased">
@@ -84,9 +32,7 @@ const TestManager: React.FC<TestManagerProps> = ({ exercise, onBack, onRefresh }
       </button>
 
       <div className="flex gap-6 flex-1 min-h-0 min-w-0">
-        
         <div className="flex-1 flex flex-col min-w-0 bg-zinc-900 border border-zinc-800 rounded-lg p-6 shadow-sm">
-          
           <div className="flex justify-between items-center mb-6 shrink-0 border-b border-zinc-800 pb-4 gap-4">
             <h1 className="text-xl font-bold text-green-400 flex-1 min-w-0 break-words">
               Nuevo Test: {exercise.title}
@@ -130,49 +76,11 @@ const TestManager: React.FC<TestManagerProps> = ({ exercise, onBack, onRefresh }
       </div>
 
       {viewedTest && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex justify-center items-center z-50 p-4" onClick={() => setViewedTest(null)}>
-          <div className="bg-zinc-900 border border-zinc-700 rounded-lg w-full max-w-4xl flex flex-col max-h-[85vh] shadow-2xl" onClick={(e) => e.stopPropagation()}>
-            
-            <div className="flex justify-between items-center p-5 border-b border-zinc-800 shrink-0 bg-zinc-900/50 rounded-t-lg">
-              <h3 className="text-xl font-bold text-blue-400 flex items-center gap-2">
-                <TerminalIcon size={20} /> Reproducción del Test #{viewedTest.index + 1}
-              </h3>
-              <button onClick={() => setViewedTest(null)} className="text-zinc-400 hover:text-white p-1.5 rounded-md hover:bg-zinc-800 transition-colors">
-                <X size={20} />
-              </button>
-            </div>
-            
-            <div className="p-6 flex-1 overflow-y-auto bg-[#0a0a0a] rounded-b-lg flex flex-col gap-5">
-              
-              {viewedTest.test.inputs && viewedTest.test.inputs.trim() !== '' && (
-                <div className="flex flex-col sm:flex-row sm:items-center gap-3 bg-zinc-900/40 border border-zinc-800/60 rounded-md p-2.5 shrink-0">
-                  <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider shrink-0">
-                    Valores de Entrada:
-                  </span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {viewedTest.test.inputs.split('\n').filter(Boolean).map((inp, i) => (
-                      <span key={i} className="text-green-400 font-mono text-xs font-bold bg-green-500/10 px-2 py-0.5 rounded border border-green-500/20">
-                        {inp}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <div className="flex flex-col gap-3 flex-1 min-h-0">
-                <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider block">
-                  Salida Esperada (Profesor)
-                </span>
-                <div className="bg-black border border-zinc-800 rounded-md shadow-inner flex-1 overflow-hidden flex flex-col">
-                  <pre className="p-5 text-zinc-300 font-mono text-sm overflow-auto whitespace-pre leading-relaxed custom-scrollbar flex-1">
-                    {renderWithInputs(viewedTest.test.expected, viewedTest.test.inputs)}
-                  </pre>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </div>
+        <TestPlaybackModal 
+          test={viewedTest.test}
+          index={viewedTest.index}
+          onClose={() => setViewedTest(null)}
+        />
       )}
     </div>
   );

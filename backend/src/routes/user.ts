@@ -4,12 +4,13 @@ import { requireAuth, requireTeacher } from '../middleware/auth.js';
 
 const router = Router();
 
-router.use(requireAuth as any, requireTeacher as any);
+// Aplicamos la seguridad a todas las rutas de este archivo
+router.use(requireAuth, requireTeacher);
 
-router.get('/', getUsers as any);
-router.post('/', createUser as any); // <-- NUEVA RUTA PARA CREAR
-router.post('/import', importUsers as any);
-router.put('/:id', updateUser as any); // <-- ACTUALIZADA PARA ACEPTAR TODO EL OBJETO
-router.delete('/:id', deleteUser as any);
+router.get('/', getUsers);
+router.post('/', createUser);
+router.post('/import', importUsers);
+router.put('/:id', updateUser);
+router.delete('/:id', deleteUser);
 
 export default router;

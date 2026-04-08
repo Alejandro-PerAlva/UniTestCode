@@ -1,6 +1,6 @@
-import React, { useState, useEffect, type ChangeEvent } from 'react';
+import React from 'react';
 import { Save, FileCode, ArrowLeft } from 'lucide-react';
-import { createExercise, updateExercise } from '../../services/api';
+import { useExerciseFormLogic } from '../../hooks/admin/useExerciseFormLogic';
 import type { Exercise } from '../../types';
 
 interface ExerciseFormProps {
@@ -10,52 +10,7 @@ interface ExerciseFormProps {
 }
 
 const ExerciseForm: React.FC<ExerciseFormProps> = ({ exercise, onBack, onSaved }) => {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [teacherCode, setTeacherCode] = useState('');
-  const [fileName, setFileName] = useState('');
-  const [isVisible, setIsVisible] = useState(true);
-
-  useEffect(() => {
-    if (exercise) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setTitle(exercise.title);
-      setDescription(exercise.description);
-      setTeacherCode(exercise.teacherCode || '');
-      setIsVisible(exercise.isVisible ?? true);
-      setFileName('Código actual cargado');
-    } else {
-      setTitle('');
-      setDescription('');
-      setTeacherCode('');
-      setFileName('');
-      setIsVisible(true);
-    } 
-  }, [exercise]);
-
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      setFileName(file.name);
-      const reader = new FileReader();
-      reader.onload = (event) => setTeacherCode(event.target?.result as string);
-      reader.readAsText(file);
-    }
-  };
-
-  const handleCreateOrUpdate = async () => {
-    if (!title || !description || !teacherCode) return;
-    try {
-      if (exercise) {
-        await updateExercise(exercise.id, { title, description, teacherCode, isVisible });
-      } else {
-        await createExercise(title, description, teacherCode, isVisible);
-      }
-      onSaved();
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  const { title, setTitle, description, setDescription, teacherCode, fileName, isVisible, setIsVisible, handleFileChange, handleCreateOrUpdate } = useExerciseFormLogic(exercise, onSaved);
 
   return (
     <div className="flex flex-col gap-6 max-w-3xl mx-auto">

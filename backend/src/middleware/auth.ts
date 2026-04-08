@@ -1,32 +1,42 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import { appError } from '../utils/AppError.js';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'mi_clave_secreta_super_segura_123';
+const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_local';
 
-// Extenderemos la interfaz Request de Express para que acepte a nuestro 'user'
-export interface AuthRequest extends Request {
-  user?: any;
+// Definimos la estructura exacta de lo que guardamos en el Token
+export interface JwtPayload {
+  id: number;
+  email: string;
+  role: string;
 }
 
-export const requireAuth = (req: AuthRequest, res: Response, next: NextFunction): any => {
-  // El token suele venir en la cabecera: "Authorization: Bearer <token>"
+// Extendemos Request de forma estricta, sin 'any'
+export interface AuthRequest extends Request {
+  user?: JwtPayload;
+}
+
+export const requireAuth = (req: AuthRequest, _res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
-  if (!authHeader) return res.status(401).json({ error: 'Acceso denegado. Token no proporcionado.' });
+  
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return next(new appError('Acceso denegado. Token no proporcionado o formato inválido.', 401));
+  }
 
   const token = authHeader.split(' ')[1];
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded; // Guardamos los datos del usuario en la petición
-    next(); // Le dejamos pasar a la ruta que quería ir
+    const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
+    req.user = decoded; 
+    next(); 
   } catch (error) {
-    res.status(401).json({ error: 'Token inválido o expirado. Vuelve a iniciar sesión.' });
+    next(new appError('Token inválido o expirado. Vuelve a iniciar sesión.', 401));
   }
 };
 
-export const requireTeacher = (req: AuthRequest, res: Response, next: NextFunction): any => {
+export const requireTeacher = (req: AuthRequest, _res: Response, next: NextFunction) => {
   if (!req.user || req.user.role !== 'teacher') {
-    return res.status(403).json({ error: 'Acceso denegado. Se requieren permisos de Profesor.' });
+    return next(new appError('Acceso denegado. Se requieren permisos de Profesor.', 403));
   }
   next();
 };

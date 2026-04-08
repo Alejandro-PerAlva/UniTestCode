@@ -29,7 +29,6 @@ const Terminal: React.FC<TerminalProps> = ({
   const onOutputRef = useRef(onOutput);
   const onFinishRef = useRef(onFinish);
   
-  // NUEVO: Buffer para agrupar las pulsaciones y permitir borrar antes de enviar
   const inputBuffer = useRef('');
 
   useEffect(() => {
@@ -53,6 +52,15 @@ const Terminal: React.FC<TerminalProps> = ({
       lineHeight: 1.2,
       convertEol: true,
       disableStdin: readOnly
+    });
+
+    // LA MAGIA AQUÍ: Bloqueamos las teclas de navegación
+    term.attachCustomKeyEventHandler((e) => {
+      const blockedKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown'];
+      if (blockedKeys.includes(e.code)) {
+        return false; // Retornar false anula el comportamiento por defecto de la terminal
+      }
+      return true; // Permitimos el resto de teclas (letras, números, backspace)
     });
     
     const fitAddon = new FitAddon();
@@ -81,33 +89,31 @@ const Terminal: React.FC<TerminalProps> = ({
 
     if (!readOnly) {
       term.onData((data) => {
-        // 1. Manejo de Backspace (Borrar)
         if (data === '\x7f') {
           if (inputBuffer.current.length > 0) {
             inputBuffer.current = inputBuffer.current.slice(0, -1);
-            term.write('\b \b'); // Retrocede, pinta un espacio en blanco y vuelve a retroceder
+            term.write('\b \b');
           }
           return;
         }
         
-        // 2. Manejo de Intro (Enter) o pegado de múltiples líneas
         if (data.includes('\r') || data.includes('\n')) {
           const cleanData = data.replace(/\r/g, '\n');
           const toSend = inputBuffer.current + cleanData;
           
           socket.emit(inputEvent, toSend);
           
-          // Pintamos el salto de línea visualmente
           term.write(cleanData.replace(/\n/g, '\r\n'));
           
           if (onInputRef.current) onInputRef.current(toSend);
-          inputBuffer.current = ''; // Vaciamos el buffer
+          inputBuffer.current = ''; 
         } 
-        // 3. Letras y números normales
         else {
-          inputBuffer.current += data;
-          // Pintamos el carácter en verde brillante
-          term.write(`\x1b[32m${data}\x1b[0m`);
+          // Filtramos cualquier otra secuencia de escape (ej. por si se cuela alguna combinacion rara)
+          if (!data.startsWith('\x1b')) {
+            inputBuffer.current += data;
+            term.write(`\x1b[32m${data}\x1b[0m`);
+          }
         }
       });
     }

@@ -14,13 +14,13 @@ const router = Router();
 
 router.get('/', getExercises);
 router.post('/', createExercise);
-router.post('/import', importExercises as any);
-router.put('/:id', updateExercise as any);
-router.delete('/:id', deleteExercise as any);
+router.post('/import', importExercises);
+router.put('/:id', updateExercise);
+router.delete('/:id', deleteExercise);
 
-router.post('/:id/tests', createTestCase as any);
-router.delete('/:id/tests/:testId', deleteTestCase as any);
+router.post('/:id/tests', createTestCase);
+router.delete('/:id/tests/:testId', deleteTestCase);
 
-router.post('/:id/evaluate', evaluateExercise as any);
+router.post('/:id/evaluate', evaluateExercise);
 
 export default router;

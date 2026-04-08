@@ -1,22 +1,15 @@
-export interface User {
-  id: number;
-  email: string;
-  role: string;
-}
+import type { User } from '../types';
 
 export const setAuthData = (token: string, user: User) => {
-  // Usamos sessionStorage: muere al cerrar el navegador
   sessionStorage.setItem('mips_token', token);
   sessionStorage.setItem('mips_user', JSON.stringify(user));
   window.dispatchEvent(new Event('auth_change'));
 };
 
 export const clearAuthData = () => {
-  // 1. Destruimos la sesión
   sessionStorage.removeItem('mips_token');
   sessionStorage.removeItem('mips_user');
   
-  // 2. Barrendero: Buscamos y borramos todo el código guardado del IDE
   const keysToRemove: string[] = [];
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
@@ -25,7 +18,6 @@ export const clearAuthData = () => {
     }
   }
   
-  // Ejecutamos el borrado
   keysToRemove.forEach(key => localStorage.removeItem(key));
 
   window.dispatchEvent(new Event('auth_change'));

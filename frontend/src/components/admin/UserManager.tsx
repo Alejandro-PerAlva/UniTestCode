@@ -1,64 +1,18 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { Trash2, Edit, Download, Upload, PlusCircle } from 'lucide-react';
-import { deleteUser, importUsersData } from '../../services/api';
+import { useUserManagerLogic } from '../../hooks/admin/useUserManagerLogic';
+import type { User } from '../../types';
 
 interface UserManagerProps {
-  users: any[];
+  users: User[];
   onRefresh: () => void;
-  currentUserId: number | undefined;
-  onEdit: (user: any) => void;
+  currentUserId: number | string | undefined;
+  onEdit: (user: User) => void;
   onCreateNew: () => void;
 }
 
 const UserManager: React.FC<UserManagerProps> = ({ users, onRefresh, currentUserId, onEdit, onCreateNew }) => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleDelete = async (id: number) => {
-    if (id === currentUserId) return alert("No puedes borrar tu propia cuenta.");
-    if (!window.confirm("¿Estás seguro de expulsar a este usuario de la plataforma?")) return;
-    
-    try {
-      await deleteUser(id);
-      onRefresh();
-    } catch (error: any) {
-      alert(error.response?.data?.error || 'Error al borrar usuario');
-    }
-  };
-
-  const handleExport = () => {
-    const dataStr = JSON.stringify(users, null, 2);
-    const blob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `backup_usuarios_${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
-
-  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-      try {
-        const importedData = JSON.parse(event.target?.result as string);
-        if (importedData.length > 0 && !importedData[0].email) {
-          return alert('El archivo no parece ser un backup de usuarios válido.');
-        }
-        const result = await importUsersData(importedData);
-        onRefresh();
-        alert(`Importación completada: ${result.imported} añadidos, ${result.skipped} omitidos.`);
-      } catch (error) {
-        alert('Error al importar el archivo JSON');
-      }
-    };
-    reader.readAsText(file);
-    if (fileInputRef.current) fileInputRef.current.value = '';
-  };
+  const { fileInputRef, handleDelete, handleExport, handleImport } = useUserManagerLogic(currentUserId, onRefresh);
 
   return (
     <div className="flex flex-col gap-6">
@@ -72,7 +26,7 @@ const UserManager: React.FC<UserManagerProps> = ({ users, onRefresh, currentUser
           <button onClick={() => fileInputRef.current?.click()} className="bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-300 px-4 py-2 rounded font-bold flex items-center gap-2">
             <Upload size={18} /> Importar
           </button>
-          <button onClick={handleExport} className="bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-300 px-4 py-2 rounded font-bold flex items-center gap-2">
+          <button onClick={() => handleExport(users)} className="bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-300 px-4 py-2 rounded font-bold flex items-center gap-2">
             <Download size={18} /> Exportar
           </button>
           <button onClick={onCreateNew} className="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded font-bold flex items-center gap-2 ml-2">
@@ -98,19 +52,11 @@ const UserManager: React.FC<UserManagerProps> = ({ users, onRefresh, currentUser
             </div>
 
             <div className="flex items-center gap-2">
-              {/* Botón Editar Unificado */}
-              <button 
-                onClick={() => onEdit(user)}
-                className="p-2 rounded hover:bg-gray-800 text-blue-400 hover:text-blue-300"
-              >
+              <button onClick={() => onEdit(user)} className="p-2 rounded hover:bg-gray-800 text-blue-400 hover:text-blue-300">
                 <Edit size={20} />
               </button>
               <div className="w-px h-6 bg-gray-800 mx-1"></div>
-              <button 
-                onClick={() => handleDelete(user.id)}
-                disabled={user.id === currentUserId}
-                className="p-2 rounded hover:bg-red-900/50 text-red-400 hover:text-red-300 disabled:opacity-25"
-              >
+              <button onClick={() => handleDelete(user.id)} disabled={user.id === currentUserId} className="p-2 rounded hover:bg-red-900/50 text-red-400 hover:text-red-300 disabled:opacity-25">
                 <Trash2 size={20} />
               </button>
             </div>

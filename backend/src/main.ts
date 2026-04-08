@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
@@ -26,6 +26,16 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 
 setupSockets(io);
+
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  const status = err.statusCode || 500;
+  const message = err.message || 'Error interno del servidor';
+  
+  res.status(status).json({
+    error: message,
+    status: status
+  });
+});
 
 const PORT = process.env.PORT || 5000;
 httpServer.listen(PORT, () => {

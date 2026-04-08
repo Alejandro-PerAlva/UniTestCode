@@ -1,19 +1,20 @@
 import { Socket } from 'socket.io';
-import { spawn } from 'child_process';
-import fs from 'fs';
+import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
 import path from 'path';
 import os from 'os';
+import fs from 'fs';
 import { normalizeSpimToMars } from '../services/parser.js';
-import { interceptMarsError } from './utils.js';
+import { interceptMarsError, safeDeleteFile } from './utils.js';
 
 const tempDir = path.join(os.tmpdir(), 'mips_evaluator_temp');
 if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
 
 export const setupRunHandler = (socket: Socket) => {
-  let marsProcess: any = null;
+  // Tipamos correctamente el proceso de Node.js
+  let marsProcess: ChildProcessWithoutNullStreams | null = null;
   let currentTempPath = '';
 
-  socket.on("start_run", (code: string) => {
+  socket.on("start_run", async (code: string) => {
     if (marsProcess) marsProcess.kill('SIGKILL');
 
     let cleanCode = code.replace(/_EVALUADOR_/g, '');
@@ -21,19 +22,21 @@ export const setupRunHandler = (socket: Socket) => {
 
     const fileName = `run_${socket.id}_${Date.now()}.s`;
     currentTempPath = path.join(tempDir, fileName);
-    fs.writeFileSync(currentTempPath, cleanCode);
+    
+    // Escritura asíncrona (No bloquea el servidor)
+    await fs.promises.writeFile(currentTempPath, cleanCode);
 
     const marsPath = path.join(process.cwd(), 'bin', 'Mars45.jar'); 
     
     marsProcess = spawn('java', ['-jar', marsPath, 'nc', fileName], { cwd: tempDir });
 
-    marsProcess.on('error', (err: any) => socket.emit("output", `\r\n\x1b[31m[ERROR]: ${err.message}\x1b[0m\r\n`));
+    marsProcess.on('error', (err: Error) => socket.emit("output", `\r\n\x1b[31m[ERROR]: ${err.message}\x1b[0m\r\n`));
     marsProcess.stdout.on('data', (data: Buffer) => socket.emit("output", data.toString()));
     marsProcess.stderr.on('data', (data: Buffer) => socket.emit("output", interceptMarsError(data)));
 
-    marsProcess.on('close', (code: number) => {
+    marsProcess.on('close', async (code: number) => {
       socket.emit("execution_finished", code);
-      if (fs.existsSync(currentTempPath)) fs.unlinkSync(currentTempPath);
+      await safeDeleteFile(currentTempPath);
     });
   });
 
@@ -41,8 +44,8 @@ export const setupRunHandler = (socket: Socket) => {
     if (marsProcess && marsProcess.stdin) marsProcess.stdin.write(data);
   });
 
-  socket.on("disconnect", () => {
+  socket.on("disconnect", async () => {
     if (marsProcess) marsProcess.kill('SIGKILL');
-    if (fs.existsSync(currentTempPath)) fs.unlinkSync(currentTempPath);
+    await safeDeleteFile(currentTempPath);
   });
 };
