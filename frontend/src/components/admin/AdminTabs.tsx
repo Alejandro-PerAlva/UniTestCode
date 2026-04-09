@@ -1,9 +1,20 @@
+/**
+ * @module AdminTabs
+ * Navigation component for the Administrator dashboard to toggle between management contexts.
+ */
+
 import React from 'react';
 import type { ViewState } from '../../hooks/admin/useAdminLogic';
 
-interface AdminTabsProps {
+/**
+ * Props for the AdminTabs component.
+ */
+export interface AdminTabsProps {
+  /** The currently active view state to determine tab highlighting. */
   view: ViewState;
+  /** Callback triggered when the 'Exercises' tab is clicked. */
   onSelectExercises: () => void;
+  /** Callback triggered when the 'Users' tab is clicked. */
   onSelectUsers: () => void;
 }
 

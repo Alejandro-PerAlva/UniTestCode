@@ -1,3 +1,8 @@
+/**
+ * @module RunHandler
+ * Manages the real-time execution of standalone MIPS assembly code via the MARS simulator.
+ */
+
 import { Socket } from 'socket.io';
 import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
 import path from 'path';
@@ -9,8 +14,12 @@ import { interceptMarsError, safeDeleteFile } from './utils.js';
 const tempDir = path.join(os.tmpdir(), 'mips_evaluator_temp');
 if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
 
+/**
+ * Registers event listeners on the provided socket to handle the compilation, 
+ * execution, and termination of standard MIPS code sessions.
+ * * @param socket - The active client socket connection.
+ */
 export const setupRunHandler = (socket: Socket) => {
-  // Tipamos correctamente el proceso de Node.js
   let marsProcess: ChildProcessWithoutNullStreams | null = null;
   let currentTempPath = '';
 
@@ -23,7 +32,6 @@ export const setupRunHandler = (socket: Socket) => {
     const fileName = `run_${socket.id}_${Date.now()}.s`;
     currentTempPath = path.join(tempDir, fileName);
     
-    // Escritura asíncrona (No bloquea el servidor)
     await fs.promises.writeFile(currentTempPath, cleanCode);
 
     const marsPath = path.join(process.cwd(), 'bin', 'Mars45.jar'); 

@@ -1,11 +1,22 @@
+/**
+ * @module UserForm
+ * Form component for manually creating or modifying user profiles.
+ */
+
 import React from 'react';
 import { Save, ArrowLeft, User as UserIcon } from 'lucide-react';
 import { useUserFormLogic } from '../../hooks/admin/useUserFormLogic';
 import type { User } from '../../types';
 
-interface UserFormProps {
+/**
+ * Props for the UserForm component.
+ */
+export interface UserFormProps {
+  /** The user data to populate the form for editing. Null if creating a new user. */
   user: User | null;
+  /** Callback to navigate back to the user list without saving. */
   onBack: () => void;
+  /** Callback triggered after a successful save or update operation. */
   onSaved: () => void;
 }
 

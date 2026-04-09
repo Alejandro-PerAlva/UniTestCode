@@ -1,15 +1,32 @@
+/**
+ * @module DuelControls
+ * Navigation and control bar for the Web IDE, managing exercise selection 
+ * and execution state toggling.
+ */
+
 import React from 'react';
 import { Play, Info, Square } from 'lucide-react';
 import type { Exercise } from '../../types';
 
-interface DuelControlsProps {
+/**
+ * Props for the DuelControls component.
+ */
+export interface DuelControlsProps {
+  /** Array of available exercises to populate the selection dropdown. */
   exercises: Exercise[];
+  /** Currently selected exercise ID. */
   selectedExerciseId: number | '';
+  /** Callback triggered when a new exercise is selected. */
   onExerciseChange: (id: number) => void;
+  /** Callback to trigger the display of the exercise instructions modal. */
   onShowDescription: () => void;
+  /** Flag indicating if an execution process is currently active. */
   isRunning: boolean;
+  /** Flag indicating if the editor contains code to enable execution buttons. */
   hasCode: boolean;
+  /** Callback to initiate the Duel Mode execution. */
   onStartDuel: () => void;
+  /** Callback to forcefully terminate an ongoing execution. */
   onStopDuel: () => void;
 }
 

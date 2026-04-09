@@ -1,3 +1,9 @@
+/**
+ * @module App
+ * Root application component.
+ * Configures the React Router hierarchy, global authentication state, and route-level access guards.
+ */
+
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useAppLogic } from './hooks/core/useAppLogic';
 import Navbar from './components/layout/Navbar';

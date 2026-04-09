@@ -1,9 +1,19 @@
-// src/hooks/useIdeLogic.ts
+/**
+ * @module useIdeLogic
+ * Drives the state and real-time Socket.IO interactions for the Web IDE.
+ * Orchestrates Duel Mode and Single Test evaluations.
+ */
+
 import { useState, useEffect } from 'react';
 import { fetchExercises } from '../../services/api';
 import { socket } from '../../services/socket';
 import type { Exercise, TestResultPayload } from '../../types';
 
+/**
+ * Comprehensive custom hook for the interactive IDE environment.
+ * Handles code persistence via LocalStorage and real-time execution via WebSockets.
+ * * @returns IDE state flags, current source code, and real-time execution handlers.
+ */
 export const useIdeLogic = () => {
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [selectedExerciseId, setSelectedExerciseId] = useState<number | ''>('');
@@ -16,7 +26,6 @@ export const useIdeLogic = () => {
   const [evaluatingTestIndex, setEvaluatingTestIndex] = useState<number | null>(null);
   const [singleTestResult, setSingleTestResult] = useState<TestResultPayload | null>(null);
 
-  // 1. Cargar ejercicios y configurar listeners de sockets
   useEffect(() => {
     const loadExercises = async () => {
       try {
@@ -46,13 +55,10 @@ export const useIdeLogic = () => {
     };
   }, []);
 
-  // 2. Cargar código guardado al cambiar de ejercicio
-  // Creamos un estado para trackear el ejercicio anterior
   const [prevExerciseId, setPrevExerciseId] = useState<number | ''>('');
 
-  // Si el ID cambia, actualizamos el código DIRECTAMENTE sin useEffect
   if (selectedExerciseId !== prevExerciseId) {
-    setPrevExerciseId(selectedExerciseId); // Guardamos el nuevo ID
+    setPrevExerciseId(selectedExerciseId);
     
     if (selectedExerciseId) {
       const savedCode = localStorage.getItem(`mips_code_${selectedExerciseId}`);
@@ -96,7 +102,6 @@ export const useIdeLogic = () => {
     });
   };
 
-  // Devolvemos todo lo que la interfaz necesita para pintarse
   return {
     exercises,
     selectedExerciseId,

@@ -1,15 +1,31 @@
+/**
+ * @module EvaluatorForm
+ * Presentation component for selecting an exercise and uploading a MIPS source file for evaluation.
+ */
+
 import React, { type ChangeEvent } from 'react';
 import { Play, FileCode, Info } from 'lucide-react';
 import type { Exercise } from '../../types';
 
-interface EvaluatorFormProps {
+/**
+ * Props for the EvaluatorForm component.
+ */
+export interface EvaluatorFormProps {
+  /** Array of exercises available for evaluation. */
   exercises: Exercise[];
+  /** ID of the currently selected exercise. */
   selectedExerciseId: number | '';
+  /** Handler for changing the selected exercise. */
   onExerciseChange: (id: number) => void;
+  /** Callback to trigger the display of the exercise instructions modal. */
   onShowDescription: () => void;
+  /** The currently selected MIPS assembly file. */
   file: File | null;
+  /** Handler for file input changes. */
   onFileChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  /** Flag to disable inputs and show loading state during network evaluation. */
   isEvaluating: boolean;
+  /** Callback to trigger the batch evaluation process. */
   onEvaluate: () => void;
 }
 

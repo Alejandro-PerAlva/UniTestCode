@@ -1,12 +1,24 @@
-// src/components/ide/UnitTestPanel.tsx
+/**
+ * @module UnitTestPanel
+ * Sidebar component listing the unit tests for the currently active exercise.
+ * Allows initiating single-test evaluations and viewing their independent outcomes.
+ */
+
 import React from 'react';
 import { Play, Loader2 } from 'lucide-react';
 import type { Exercise } from '../../types';
 
-interface UnitTestPanelProps {
+/**
+ * Props for the UnitTestPanel component.
+ */
+export interface UnitTestPanelProps {
+  /** The currently selected exercise containing the test cases. */
   selectedExercise: Exercise | null;
+  /** The active code from the editor to ensure it's not empty before evaluating. */
   code: string;
+  /** The index of the test case currently being evaluated (null if idle). */
   evaluatingTestIndex: number | null;
+  /** Callback triggered when a specific test case is selected for execution. */
   onRunSingleTest: (testIndex: number) => void;
 }
 

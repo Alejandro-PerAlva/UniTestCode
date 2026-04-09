@@ -1,26 +1,32 @@
+/**
+ * @module DualTerminal
+ * Container rendering two parallel XTerm.js terminal instances for the Duel Mode.
+ * One interactive terminal for the student, and one read-only terminal for the teacher's output.
+ */
+
 import React from 'react';
 import Terminal from './Terminal';
 
-interface DualTerminalProps {
+/**
+ * Props for the DualTerminal component.
+ */
+export interface DualTerminalProps {
+  /** * A numeric counter used to force a complete re-mount and reset of the terminal 
+   * instances when a new execution starts.
+   */
   executionId: number;
 }
 
 const DualTerminal: React.FC<DualTerminalProps> = ({ executionId }) => {
   return (
-    // 1. h-full obliga a la columna a tener la altura exacta del editor de la izquierda
     <div className="w-2/3 flex flex-col h-full gap-4 min-h-0">
       
-      {/* --- MITAD SUPERIOR (Terminal Interactiva) --- */}
-      {/* 2. flex-1 le da exactamente el 50% del espacio disponible */}
       <div className="flex-1 flex flex-col gap-2 min-h-0">
-        
-        {/* Cabecera: shrink-0 evita que se aplaste si falta espacio */}
         <div className="flex justify-between items-end shrink-0">
           <label className="font-bold text-green-400">Tu Consola (Interactiva)</label>
           <span className="text-xs text-gray-500">Haz clic dentro para introducir datos</span>
         </div>
         
-        {/* 3. Contenedor del componente: flex-1 ocupa el resto del 50%, y overflow-hidden corta lo que sobre */}
         <div className="flex-1 min-h-0 overflow-hidden rounded-md">
           <Terminal 
             key={`student-${executionId}`}
@@ -32,17 +38,12 @@ const DualTerminal: React.FC<DualTerminalProps> = ({ executionId }) => {
         </div>
       </div>
 
-      {/* --- MITAD INFERIOR (Terminal Profesor) --- */}
-      {/* 2. flex-1 le da exactamente el otro 50% del espacio */}
       <div className="flex-1 flex flex-col gap-2 min-h-0">
-        
-        {/* Cabecera */}
         <div className="flex justify-between items-end shrink-0">
           <label className="font-bold text-purple-400">Consola del Profesor (Salida Esperada)</label>
           <span className="text-xs text-gray-500">Solo lectura - Refleja los mismos inputs</span>
         </div>
         
-        {/* 3. Contenedor del componente */}
         <div className="flex-1 min-h-0 overflow-hidden rounded-md">
           <Terminal 
             key={`teacher-${executionId}`}

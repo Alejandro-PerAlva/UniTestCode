@@ -1,3 +1,17 @@
+/**
+ * @module ExerciseRoutes
+ * Defines the Express router for exercise-related endpoints.
+ * * Endpoints:
+ * - GET    /                  : Fetch all exercises
+ * - POST   /                  : Create a new exercise
+ * - POST   /import            : Bulk import exercises
+ * - PUT    /:id               : Update a specific exercise
+ * - DELETE /:id               : Remove a specific exercise
+ * - POST   /:id/tests         : Add a test case to an exercise
+ * - DELETE /:id/tests/:testId : Remove a test case from an exercise
+ * - POST   /:id/evaluate      : Run student code against an exercise's tests
+ */
+
 import { Router } from 'express';
 import { 
     getExercises, 

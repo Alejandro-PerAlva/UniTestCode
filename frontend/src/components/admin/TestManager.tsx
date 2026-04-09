@@ -1,3 +1,8 @@
+/**
+ * @module TestManager
+ * Interactive interface for creating, viewing, and deleting unit tests for a specific exercise.
+ */
+
 import React from 'react';
 import { Play, Save, Square, ArrowLeft, Trash2 } from 'lucide-react';
 import Terminal from '../ide/Terminal';
@@ -5,24 +10,26 @@ import { useTestManagerLogic } from '../../hooks/admin/useTestManagerLogic';
 import TestPlaybackModal from '../shared/TestPlaybackModal';
 import type { Exercise } from '../../types';
 
-interface TestManagerProps {
+/**
+ * Props for the TestManager component.
+ */
+export interface TestManagerProps {
+  /** The parent exercise associated with the test suite. */
   exercise: Exercise;
+  /** Callback to return to the exercise list. */
   onBack: () => void;
+  /** Callback to trigger a data fetch after a test is created or deleted. */
   onRefresh: () => void;
 }
 
 const TestManager: React.FC<TestManagerProps> = ({ exercise, onBack, onRefresh }) => {
   const {
-    isRunning,
-    setIsRunning,
+    isRunning, setIsRunning,
     setRecordedInput,
-    recordedOutput,
-    setRecordedOutput,
-    viewedTest,
-    setViewedTest,
+    recordedOutput, setRecordedOutput,
+    viewedTest, setViewedTest,
     startRecording,
-    handleSaveTest,
-    handleDeleteTest
+    handleSaveTest, handleDeleteTest
   } = useTestManagerLogic(exercise, onRefresh);
 
   return (

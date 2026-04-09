@@ -1,3 +1,9 @@
+/**
+ * @module Navbar
+ * Application navigation bar component.
+ * Handles top-level routing links, user role display, and session termination.
+ */
+
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { Code2, Upload, Settings, LogOut } from 'lucide-react';

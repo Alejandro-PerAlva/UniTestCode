@@ -1,7 +1,18 @@
+/**
+ * @module useExerciseListLogic
+ * Encapsulates the operations available on the exercise datatable.
+ */
+
 import { useRef } from 'react';
 import { updateExercise, deleteExercise, importExercisesData } from '../../services/api';
 import type { Exercise } from '../../types';
 
+/**
+ * Custom hook for managing list-level exercise operations like deletion, visibility toggling, and I/O.
+ * * @param exercises - The current array of exercises displayed in the list.
+ * @param onRefresh - Callback to trigger a data reload after a successful operation.
+ * @returns Handlers for table actions and a reference for the hidden file input.
+ */
 export const useExerciseListLogic = (exercises: Exercise[], onRefresh: () => void) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -48,7 +59,7 @@ export const useExerciseListLogic = (exercises: Exercise[], onRefresh: () => voi
         const result = await importExercisesData(importedData);
         onRefresh();
         alert(`Importación completada: ${result.imported} añadidos, ${result.skipped} omitidos (ya existían).`);
-      } catch (error) {
+      } catch {
         alert('Error al importar el archivo JSON');
       }
     };

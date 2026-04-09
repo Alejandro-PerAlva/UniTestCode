@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "build": "tsc && vite build",
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview",
+    "docs": "typedoc --entryPointStrategy expand ./src --out docs --name \"UnitTestCode - Frontend\" --includeVersion --plugin typedoc-plugin-coverage --coverageLabel \"Cobertura TSDoc\""
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
@@ -35,6 +36,8 @@
     "globals": "^17.4.0",
     "postcss": "^8.5.8",
     "tailwindcss": "^4.2.2",
+    "typedoc": "^0.28.18",
+    "typedoc-plugin-coverage": "^4.0.2",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.57.0",
     "vite": "^8.0.1"

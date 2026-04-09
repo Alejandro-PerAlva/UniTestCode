@@ -4,7 +4,9 @@
   "type": "module",
   "main": "main.js",
   "scripts": {
-    "dev": "tsx watch src/main.ts"
+    "dev": "nodemon src/server.ts",
+    "build": "tsc",
+    "docs": "typedoc --entryPointStrategy expand ./src --out docs --name \"UnitTestCode - Backend\" --includeVersion --plugin typedoc-plugin-coverage --coverageLabel \"Cobertura TSDoc\" --validation.invalidLink false"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",
@@ -24,6 +26,8 @@
     "@types/socket.io": "^3.0.1",
     "prisma": "^6.19.3",
     "tsx": "^4.21.0",
+    "typedoc": "^0.28.18",
+    "typedoc-plugin-coverage": "^4.0.2",
     "typescript": "^5.9.3"
   },
   "description": "",

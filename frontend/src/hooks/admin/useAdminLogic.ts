@@ -1,10 +1,23 @@
+/**
+ * @module useAdminLogic
+ * Orchestrates the primary state and navigation for the Admin/Teacher dashboard.
+ */
+
 import { useState, useEffect, useCallback } from 'react';
 import { fetchExercises, fetchUsers } from '../../services/api';
 import { getUser } from '../../services/auth';
 import type { Exercise, User } from '../../types';
 
+/**
+ * Defines the possible UI states for the admin dashboard renderer.
+ */
 export type ViewState = 'list' | 'create' | 'edit' | 'test' | 'users' | 'user-create' | 'user-edit';
 
+/**
+ * Custom hook to manage the top-level state of the admin dashboard.
+ * Handles data fetching, view switching, and item selection.
+ * * @returns An object containing the current view state, data arrays, selection states, and navigation handlers.
+ */
 export const useAdminLogic = () => {
   const [view, setView] = useState<ViewState>('list');
   const [exercises, setExercises] = useState<Exercise[]>([]);

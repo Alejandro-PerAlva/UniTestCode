@@ -1,3 +1,9 @@
+/**
+ * @module AdminPage
+ * Top-level container for the Administrator and Teacher dashboard.
+ * Conditionally renders sub-views (lists, forms, test managers) based on the hook's state.
+ */
+
 import React from 'react';
 import { useAdminLogic } from '../hooks/admin/useAdminLogic';
 

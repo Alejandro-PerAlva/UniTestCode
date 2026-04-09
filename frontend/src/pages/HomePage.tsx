@@ -1,3 +1,9 @@
+/**
+ * @module HomePage
+ * The main landing dashboard for authenticated users.
+ * Displays navigational feature cards and general platform information.
+ */
+
 import React from 'react';
 import { useHomeLogic } from '../hooks/home/useHomeLogic';
 

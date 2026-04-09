@@ -1,13 +1,26 @@
+/**
+ * @module UserManager
+ * Datatable component displaying all registered users with management actions.
+ */
+
 import React from 'react';
 import { Trash2, Edit, Download, Upload, PlusCircle } from 'lucide-react';
 import { useUserManagerLogic } from '../../hooks/admin/useUserManagerLogic';
 import type { User } from '../../types';
 
-interface UserManagerProps {
+/**
+ * Props for the UserManager component.
+ */
+export interface UserManagerProps {
+  /** Array of users to render in the list. */
   users: User[];
+  /** Callback to trigger a data fetch after a mutating operation. */
   onRefresh: () => void;
+  /** The ID of the currently authenticated admin to prevent self-deletion. */
   currentUserId: number | string | undefined;
+  /** Callback to navigate to the user edit form. */
   onEdit: (user: User) => void;
+  /** Callback to navigate to the user creation form. */
   onCreateNew: () => void;
 }
 

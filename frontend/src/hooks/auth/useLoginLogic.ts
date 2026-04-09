@@ -1,8 +1,18 @@
+/**
+ * @module useLoginLogic
+ * Manages the state and submission flow for the authentication gateway (Login/Register).
+ */
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginUser, registerUser } from '../../services/api';
 import { setAuthData } from '../../services/auth';
 
+/**
+ * Custom hook encapsulating the authentication forms logic.
+ * Handles dual modes (login vs. registration) and automatic login post-registration.
+ * * @returns State variables, toggle handlers, and the form submission routine.
+ */
 export const useLoginLogic = () => {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
@@ -25,13 +35,11 @@ export const useLoginLogic = () => {
         navigate('/home');
       } else {
         await registerUser({ email, password, role, secretCode });
-        // Si el registro es exitoso, hacemos login automático
         const data = await loginUser({ email, password });
         setAuthData(data.token, data.user);
         navigate('/home');
       }
     } catch (error) {
-      // Tipamos el error esperado de Axios para evitar el uso de 'any'
       const err = error as { response?: { data?: { error?: string } } };
       setError(err.response?.data?.error || 'Error de conexión con el servidor');
     } finally {

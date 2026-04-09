@@ -1,9 +1,19 @@
+/**
+ * @module ResultsBoard
+ * Presentation component displaying the execution summary and individual test outcomes.
+ */
+
 import React from 'react';
 import { CheckCircle, XCircle } from 'lucide-react';
 import type { SubmissionResponse, TestResult } from '../../types';
 
-interface ResultsBoardProps {
+/**
+ * Props for the ResultsBoard component.
+ */
+export interface ResultsBoardProps {
+  /** The comprehensive evaluation payload returned by the server. */
   evalData: SubmissionResponse;
+  /** Callback triggered when a user clicks on a specific test tile to view details. */
   onViewTest: (index: number) => void;
 }
 

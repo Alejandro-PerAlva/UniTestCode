@@ -1,11 +1,23 @@
+/**
+ * @module CodeEditor
+ * Presentation component wrapping the Monaco Editor instance for MIPS assembly.
+ * Includes functionality to download the current buffer as a `.s` file.
+ */
+
 import React from 'react';
 import { Download } from 'lucide-react';
 import Editor from '@monaco-editor/react';
 import type { Exercise } from '../../types';
 
-interface CodeEditorProps {
+/**
+ * Props for the CodeEditor component.
+ */
+export interface CodeEditorProps {
+  /** The current string value of the code editor. */
   code: string;
+  /** Callback triggered whenever the editor content changes. */
   onChange: (value: string) => void;
+  /** The currently selected exercise object, used to derive the download filename. */
   selectedExercise: Exercise | null;
 }
 

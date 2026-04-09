@@ -1,24 +1,23 @@
-import { useState, useEffect } from 'react';
+/**
+ * @module useUserFormLogic
+ * Manages the state and submission logic for the User creation and editing forms.
+ */
+
+import { useState } from 'react';
 import { createUser, updateUser } from '../../services/api';
 import type { User } from '../../types';
 
+/**
+ * Custom hook to encapsulate the form handling for user administration.
+ * * @param user - The user to edit, or null if creating a new account.
+ * @param onSaved - Callback triggered after a successful API submission.
+ * @returns Form state variables and their respective change handlers.
+ */
 export const useUserFormLogic = (user: User | null, onSaved: () => void) => {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(user?.email || '');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('student');
+  const [role, setRole] = useState(user?.role || 'student');
   const [error, setError] = useState('');
-
-  useEffect(() => {
-    if (user) {
-      setEmail(user.email);
-      setRole(user.role || 'student');
-      setPassword('');
-    } else {
-      setEmail('');
-      setRole('student');
-      setPassword('');
-    }
-  }, [user]);
 
   const handleSave = async () => {
     if (!email) return;
@@ -35,8 +34,8 @@ export const useUserFormLogic = (user: User | null, onSaved: () => void) => {
         await createUser({ email, password, role });
       }
       onSaved();
-    } catch (error) {
-      const err = error as { response?: { data?: { error?: string } } };
+    } catch (_error) {
+      const err = _error as { response?: { data?: { error?: string } } };
       setError(err.response?.data?.error || "Error al guardar el usuario");
     }
   };

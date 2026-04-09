@@ -1,3 +1,8 @@
+/**
+ * @module FaqSection
+ * Static presentation component displaying Frequently Asked Questions.
+ */
+
 import React from 'react';
 import { HelpCircle } from 'lucide-react';
 

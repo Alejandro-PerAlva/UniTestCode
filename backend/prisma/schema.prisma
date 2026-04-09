@@ -1,3 +1,6 @@
+/// @module PrismaSchema
+/// Defines the database models and relationships for the application.
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,6 +10,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/// Represents a programming exercise/challenge within the platform.
 model Exercise {
   id              Int        @id @default(autoincrement())
   title           String
@@ -14,21 +18,22 @@ model Exercise {
   language        String     @default("mips")
   teacherCode     String
   teacherCodeMars String?
-  testbenchCode   String?
-  isVisible       Boolean    @default(true) // NUEVA PROPIEDAD
+  isVisible       Boolean    @default(true)
   createdAt       DateTime   @default(now())
   tests           TestCase[]
 }
 
+/// Represents a single test case consisting of inputs and expected outputs.
+/// Automatically deleted if the parent Exercise is removed (Cascade).
 model TestCase {
   id         Int      @id @default(autoincrement())
   exerciseId Int
   inputs     String
   expected   String
-  // NUEVO: onDelete Cascade para permitir borrar ejercicios con tests
-  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade) 
+  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
 }
 
+/// Represents an authenticated user in the system (Student or Teacher).
 model User {
   id       Int    @id @default(autoincrement())
   email    String @unique

@@ -1,16 +1,33 @@
+/**
+ * @module ExerciseForm
+ * Form component for creating or editing a programming exercise.
+ */
+
 import React from 'react';
 import { Save, FileCode, ArrowLeft } from 'lucide-react';
 import { useExerciseFormLogic } from '../../hooks/admin/useExerciseFormLogic';
 import type { Exercise } from '../../types';
 
-interface ExerciseFormProps {
+/**
+ * Props for the ExerciseForm component.
+ */
+export interface ExerciseFormProps {
+  /** The exercise data to populate the form for editing. Null if creating a new exercise. */
   exercise: Exercise | null;
+  /** Callback to navigate back to the exercise list without saving. */
   onBack: () => void;
+  /** Callback triggered after a successful save or update operation. */
   onSaved: () => void;
 }
 
 const ExerciseForm: React.FC<ExerciseFormProps> = ({ exercise, onBack, onSaved }) => {
-  const { title, setTitle, description, setDescription, teacherCode, fileName, isVisible, setIsVisible, handleFileChange, handleCreateOrUpdate } = useExerciseFormLogic(exercise, onSaved);
+  const { 
+    title, setTitle, 
+    description, setDescription, 
+    teacherCode, fileName, 
+    isVisible, setIsVisible, 
+    handleFileChange, handleCreateOrUpdate 
+  } = useExerciseFormLogic(exercise, onSaved);
 
   return (
     <div className="flex flex-col gap-6 max-w-3xl mx-auto">

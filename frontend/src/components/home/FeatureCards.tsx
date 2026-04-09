@@ -1,8 +1,18 @@
+/**
+ * @module FeatureCards
+ * Presentation component displaying primary navigation action cards on the home dashboard.
+ */
+
 import React from 'react';
 import { Terminal, Upload, PlayCircle } from 'lucide-react';
 
-interface FeatureCardsProps {
+/**
+ * Props for the FeatureCards component.
+ */
+export interface FeatureCardsProps {
+  /** Callback triggered when the user opts to navigate to the Web IDE view. */
   onNavigateIde: () => void;
+  /** Callback triggered when the user opts to navigate to the Multi-Evaluator view. */
   onNavigateSubmit: () => void;
 }
 

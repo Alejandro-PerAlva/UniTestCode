@@ -1,3 +1,9 @@
+/**
+ * @module DuelHandler
+ * Orchestrates the "Duel Mode" and single-test execution features.
+ * Handles the parallel execution of the student's code and the teacher's reference code.
+ */
+
 import { Socket } from 'socket.io';
 import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
 import path from 'path';
@@ -10,6 +16,11 @@ import { interceptMarsError, safeDeleteFile } from './utils.js';
 const tempDir = path.join(os.tmpdir(), 'mips_evaluator_temp');
 if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
 
+/**
+ * Registers event listeners for parallel code execution (Duel) and individual test case validation.
+ * Safely manages multiple child processes and ensures proper cleanup upon completion or disconnection.
+ * * @param socket - The active client socket connection.
+ */
 export const setupDuelHandler = (socket: Socket) => {
   let duelStudentProcess: ChildProcessWithoutNullStreams | null = null;
   let duelTeacherProcess: ChildProcessWithoutNullStreams | null = null;
@@ -105,6 +116,7 @@ export const setupDuelHandler = (socket: Socket) => {
 
       try {
         const codeToUse = exercise.teacherCodeMars || exercise.teacherCode || "";
+        // Temporary type assertion required to support legacy frontend implementations
         const targetFn = (exercise as any).targetFunction || undefined; 
         const codes = buildExecutionCodes(studentCode, codeToUse, targetFn);
         finalStudentCode = codes.finalStudentCode;
@@ -123,12 +135,12 @@ export const setupDuelHandler = (socket: Socket) => {
       const result = await evaluateMips(finalStudentCode, inputs);
 
       const normalize = (str: string) => str.replace(/\r\n/g, '\n').trim();
-      const passed = normalize(result.resultado) === normalize(test.expected);
+      const passed = normalize(result.output) === normalize(test.expected);
 
       socket.emit('single_test_result', {
         passed,
         expected: test.expected,
-        output: result.resultado,
+        output: result.output,
         error: result.error,
         testIndex,
         originalTest: test

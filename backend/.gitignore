@@ -1,5 +1,33 @@
-node_modules
-# Keep environment variables out of version control
-.env
+# ==========================================
+# Backend Git Ignore
+# ==========================================
 
-/src/generated/prisma
+# Dependencies
+node_modules/
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# SQLite Database Files (Critical Security)
+*.db
+*.db-journal
+*.sqlite
+*.sqlite-journal
+
+# Prisma generated folders (Optional, usually generated on postinstall)
+# /prisma/migrations/ <-- DO NOT IGNORE MIGRATIONS! Keep them versioned.
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# OS & Editor Files
+.DS_Store
+.vscode/
+.idea/
+
+# Documentation generated 
+docs/

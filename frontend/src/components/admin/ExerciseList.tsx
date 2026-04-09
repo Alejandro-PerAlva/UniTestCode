@@ -1,13 +1,26 @@
+/**
+ * @module ExerciseList
+ * Datatable component displaying all available exercises with management actions.
+ */
+
 import React from 'react';
 import { PlusCircle, Edit, Trash2, Eye, EyeOff, Terminal as TerminalIcon, Download, Upload } from 'lucide-react';
 import { useExerciseListLogic } from '../../hooks/admin/useExerciseListLogic';
 import type { Exercise } from '../../types';
 
-interface ExerciseListProps {
+/**
+ * Props for the ExerciseList component.
+ */
+export interface ExerciseListProps {
+  /** Array of exercises to render in the list. */
   exercises: Exercise[];
+  /** Callback to trigger a data fetch after a mutating operation. */
   onRefresh: () => void;
+  /** Callback to navigate to the exercise creation form. */
   onCreateNew: () => void;
+  /** Callback to navigate to the exercise edit form. */
   onEdit: (ex: Exercise) => void;
+  /** Callback to navigate to the test suite manager for a specific exercise. */
   onManageTests: (ex: Exercise) => void;
 }
 

@@ -1,12 +1,25 @@
+/**
+ * @module TestDetailModal
+ * Modal component for deeply inspecting the execution results of a specific test case.
+ * Displays a side-by-side comparison of expected vs. actual MARS simulator output.
+ */
+
 import React from 'react';
 import { CheckCircle, XCircle, X } from 'lucide-react';
 import { useTestFormatter } from '../../hooks/shared/useTestFormatter';
 import type { TestCase, TestResultPayload } from '../../types';
 
-interface TestDetailModalProps {
-  result: TestResultPayload; // ¡Adiós any!
+/**
+ * Props for the TestDetailModal component.
+ */
+export interface TestDetailModalProps {
+  /** The structured evaluation payload for the specific test case. */
+  result: TestResultPayload;
+  /** The original test case definition containing inputs and expected output. */
   originalTest: TestCase | undefined;
+  /** The zero-based index of the test within the suite. */
   testIndex: number;
+  /** Callback to trigger modal closure. */
   onClose: () => void;
 }
 

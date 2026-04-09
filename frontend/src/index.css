@@ -1,1 +1,6 @@
+/**
+ * @module GlobalStyles
+ * Injects Tailwind CSS directives for base styles, components, and utility classes.
+ */
+
 @import "tailwindcss";

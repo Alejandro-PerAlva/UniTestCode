@@ -1,7 +1,18 @@
+/**
+ * @module useExerciseFormLogic
+ * Manages the state and submission logic for the Exercise creation and editing forms.
+ */
+
 import { useState } from 'react';
 import { createExercise, updateExercise } from '../../services/api';
 import type { Exercise } from '../../types';
 
+/**
+ * Custom hook to encapsulate the form handling for exercises.
+ * * @param exercise - The exercise to edit, or null if creating a new one.
+ * @param onSaved - Callback triggered after a successful API submission.
+ * @returns Form state variables and their respective change handlers.
+ */
 export const useExerciseFormLogic = (exercise: Exercise | null, onSaved: () => void) => {
   const [title, setTitle] = useState(exercise?.title || '');
   const [description, setDescription] = useState(exercise?.description || '');

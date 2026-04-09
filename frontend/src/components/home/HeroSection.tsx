@@ -1,7 +1,16 @@
+/**
+ * @module HeroSection
+ * Presentation component displaying the welcoming banner and application title.
+ */
+
 import React from 'react';
 import { Code2 } from 'lucide-react';
 
-interface HeroSectionProps {
+/**
+ * Props for the HeroSection component.
+ */
+export interface HeroSectionProps {
+  /** The localized string representation of the user's role (e.g., "Alumno" or "Profesor"). */
   userRoleText: string;
 }
 

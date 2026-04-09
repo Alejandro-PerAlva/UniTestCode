@@ -1,3 +1,9 @@
+/**
+ * @module SubmissionPage
+ * Container for the student code evaluation workflow.
+ * Manages file uploads, batch test evaluations, and the results rendering board.
+ */
+
 import React from 'react';
 import { useSubmissionLogic } from '../hooks/evaluator/useSubmissionLogic';
 
@@ -46,7 +52,6 @@ const SubmissionPage: React.FC = () => {
 
       {viewedTestIndex !== null && evalData && evalData.results && selectedExercise && (
         <TestDetailModal 
-          // Mapeamos el TestResult de la API a TestResultPayload inyectando el testIndex
           result={{
             ...evalData.results[viewedTestIndex],
             testIndex: viewedTestIndex

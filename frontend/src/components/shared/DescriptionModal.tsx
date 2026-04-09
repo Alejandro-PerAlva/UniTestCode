@@ -1,9 +1,19 @@
+/**
+ * @module DescriptionModal
+ * Modal component for displaying detailed exercise instructions.
+ */
+
 import React from 'react';
 import { TerminalSquare, X } from 'lucide-react';
 import type { Exercise } from '../../types';
 
-interface DescriptionModalProps {
+/**
+ * Props for the DescriptionModal component.
+ */
+export interface DescriptionModalProps {
+  /** The exercise containing the description to display. */
   exercise: Exercise;
+  /** Callback to trigger modal closure. */
   onClose: () => void;
 }
 

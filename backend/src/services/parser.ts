@@ -1,4 +1,11 @@
+/**
+ * @module ParserService
+ * Normalizes and transpiles legacy SPIM syntax or IDE shortcuts into strict MARS 4.5 compatible MIPS assembly.
+ */
+
 const PRINT_MATRIZ_HEX_REGEX = /print_matriz:[\s\S]*?print_matriz__MARCAFIN:/;
+
+// Standardized matrix printing subroutine injected when required
 const PRINT_MATRIZ_MIPS = `print_matriz:
     addi $sp, $sp, -24
     sw $ra, 0($sp)
@@ -60,21 +67,39 @@ pm_forF_fin:
     jr $ra
 print_matriz__MARCAFIN:`;
 
+/**
+ * Sanitizes syntax anomalies that MARS rejects but other IDEs might allow.
+ * @param code - The raw MIPS string.
+ * @returns The sanitized MIPS string.
+ */
 const cleanBasicSyntax = (code: string): string => {
+    // Convert non-breaking spaces (NBSP) to standard spaces
     let clean = code.replace(/\xA0/g, ' ');
+    // Map legacy SPIM frame pointer register to standard MARS mapping
     clean = clean.replace(/\$s8\b/g, '$fp');
+    // Strip empty comments that cause syntax errors in strict parsing
     clean = clean.replace(/;\s*(?=#|\r?\n|$)/g, '');
+    // Split concatenated 64-bit hex words into two comma-separated 32-bit words
     clean = clean.replace(/\.word\s+0x([0-9a-fA-F]{8})([0-9a-fA-F]{8})\b/gi, '.word 0x$1, 0x$2');
     return clean;
 };
 
+/**
+ * Extracts IDE-specific custom constants (e.g., MAX_SIZE = 10) and resolves them 
+ * directly into the code body, as MARS does not support a preprocessor directive for constants.
+ * @param code - The raw MIPS string.
+ * @returns MIPS string with all constant references replaced by their numeric values.
+ */
 const resolveConstants = (code: string): string => {
     const constants: { name: string, value: string }[] = [];
+    
+    // Match definitions like 'CONSTANT = 5' at the start of lines
     let clean = code.replace(/^[ \t]*([a-zA-Z_]\w*)[ \t]*=[ \t]*(-?\d+)[^\n\r]*/gm, (_, name, value) => {
         constants.push({ name, value });
         return ''; 
     });
 
+    // Inject the exact numeric value wherever the constant name appears
     constants.forEach(c => {
         const regex = new RegExp(`\\b${c.name}\\b`, 'g');
         clean = clean.replace(regex, c.value);
@@ -82,10 +107,23 @@ const resolveConstants = (code: string): string => {
     return clean;
 };
 
+/**
+ * Expands shorthand `addi` instructions into their explicit three-operand equivalent.
+ * Some IDEs allow `addi $t0, 5`, but MARS strictly requires `addi $t0, $t0, 5`.
+ * @param code - The raw MIPS string.
+ * @returns MIPS string with compliant addi instructions.
+ */
 const fixAddiShortcuts = (code: string): string => {
     return code.replace(/\b(addi)\s+(\$[a-z0-9]{1,2})\s*,\s*(-?\d+)\b/gi, '$1 $2, $2, $3');
 };
 
+/**
+ * Extracts inline floating-point immediate loads and moves them to the `.data` section.
+ * MARS does not natively support `li.d $f0, 3.14`. This function creates unique labels 
+ * in the data segment and replaces the instruction with a standard `l.d` load.
+ * @param code - The raw MIPS string.
+ * @returns Restructured MIPS code with an appended `.data` section if floats were extracted.
+ */
 const extractInlineFloats = (code: string): string => {
     let dataSection = '\n\n.data\n';
     let dataAdded = false;
@@ -93,6 +131,7 @@ const extractInlineFloats = (code: string): string => {
     let doubleCounter = 0;
     const uid = Math.random().toString(36).substring(2, 8);
 
+    // Identify pseudo-instruction li.d (Load Immediate Double)
     let clean = code.replace(/li\.d[ \t]+(\$f\d+)[ \t]*,[ \t]*([-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)/ig, (_, reg, val) => {
         const label = `_auto_double_${uid}_${doubleCounter++}`;
         dataSection += `${label}: .double ${val}\n`;
@@ -100,6 +139,7 @@ const extractInlineFloats = (code: string): string => {
         return `l.d ${reg}, ${label}`;
     });
 
+    // Identify pseudo-instruction li.s (Load Immediate Single/Float)
     clean = clean.replace(/li\.s[ \t]+(\$f\d+)[ \t]*,[ \t]*([-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)/ig, (_, reg, val) => {
         const label = `_auto_float_${uid}_${floatCounter++}`;
         dataSection += `${label}: .float ${val}\n`;
@@ -110,6 +150,13 @@ const extractInlineFloats = (code: string): string => {
     return dataAdded ? clean + dataSection : clean;
 };
 
+/**
+ * Rewrites double-precision memory loads/stores (l.d, s.d) on uneven byte offsets 
+ * into two explicit single-precision coprocessor instructions (lwc1, swc1).
+ * Prevents unaligned memory access crashes in the MARS engine.
+ * @param code - The raw MIPS string.
+ * @returns MIPS string with modified floating-point memory operations.
+ */
 const fixDoubleMemoryAccess = (code: string): string => {
     return code.replace(/\b(l\.d|s\.d)\s+\$f(\d+)\s*,\s*(-?\d+)?\s*\(\s*(\$[a-z0-9]+)\s*\)/gi, (_, instr, reg, offset, base) => {
         const regNum = parseInt(reg);
@@ -119,6 +166,12 @@ const fixDoubleMemoryAccess = (code: string): string => {
     });
 };
 
+/**
+ * Ensures the code has a valid entry point if a 'main' label exists.
+ * Injects the .text directive and a jump instruction.
+ * @param code - The raw MIPS string.
+ * @returns Processed MIPS string.
+ */
 const ensureEntryPoint = (code: string): string => {
     if (code.match(/\bmain[ \t]*:/)) {
         return "\n.text\nj main\n" + code;
@@ -126,6 +179,12 @@ const ensureEntryPoint = (code: string): string => {
     return code;
 };
 
+/**
+ * The main pipeline execution for transpiling non-standard MIPS code into strict MARS syntax.
+ * Processes the raw code sequentially through a series of regex-based sanitization steps.
+ * * @param code - The raw, potentially non-standard MIPS code string.
+ * @returns The fully normalized MIPS code ready for MARS simulator execution.
+ */
 export const normalizeSpimToMars = (code: string): string => {
     if (!code) return "";
 

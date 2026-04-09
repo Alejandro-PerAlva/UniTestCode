@@ -1,13 +1,16 @@
-// src/pages/LoginPage.tsx
+/**
+ * @module LoginPage
+ * The unauthenticated entry point of the application.
+ * Wraps the authentication forms and handles login/registration logic delegation.
+ */
+
 import React from 'react';
 import { useLoginLogic } from '../hooks/auth/useLoginLogic';
 import AuthForm from '../components/auth/AuthForm';
 
 const LoginPage: React.FC = () => {
-  // 1. Instanciamos el cerebro
   const loginLogic = useLoginLogic();
 
-  // 2. Pintamos el layout general y le pasamos el cerebro al componente visual
   return (
     <div className="h-full w-full bg-gray-950 flex items-center justify-center p-4">
       <AuthForm 

@@ -1,8 +1,19 @@
+/**
+ * @module useTestManagerLogic
+ * Manages the interactive recording and deletion of test cases via Socket.IO.
+ */
+
 import { useState } from 'react';
 import { socket } from '../../services/socket';
 import { createTestCase, deleteTestCase } from '../../services/api';
 import type { Exercise, TestCase } from '../../types';
 
+/**
+ * Custom hook to handle real-time execution flows for test case generation.
+ * * @param exercise - The target exercise for which tests are being managed.
+ * @param onRefresh - Callback to reload the exercise data after saving or deleting a test.
+ * @returns State variables and handlers for the test case manager UI.
+ */
 export const useTestManagerLogic = (exercise: Exercise, onRefresh: () => void) => {
   const [isRunning, setIsRunning] = useState(false);
   const [recordedInput, setRecordedInput] = useState('');

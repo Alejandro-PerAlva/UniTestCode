@@ -1,16 +1,32 @@
+/**
+ * @module Terminal
+ * Wrapper component for the XTerm.js library, connecting it directly to Socket.IO events.
+ * Handles input sanitization, terminal resizing, and basic ANSI sequence interception.
+ */
+
 import React, { useEffect, useRef } from 'react';
 import { Terminal as XTerminal } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
 import '@xterm/xterm/css/xterm.css';
 import { socket } from '../../services/socket';
 
-interface TerminalProps {
+/**
+ * Props for the Terminal component.
+ */
+export interface TerminalProps {
+  /** Socket event name to emit when user inputs data. Defaults to 'input'. */
   inputEvent?: string;
+  /** Socket event name to listen for standard output. Defaults to 'output'. */
   outputEvent?: string;
+  /** Socket event name to listen for execution termination. Defaults to 'execution_finished'. */
   finishEvent?: string;
+  /** Flag to disable keyboard input. Adjusts the terminal theme accordingly. */
   readOnly?: boolean;
+  /** Callback triggered when input is sent. */
   onInput?: (data: string) => void;
+  /** Callback triggered when output is received. */
   onOutput?: (data: string) => void;
+  /** Callback triggered when the process finishes. */
   onFinish?: () => void;
 }
 
@@ -54,13 +70,13 @@ const Terminal: React.FC<TerminalProps> = ({
       disableStdin: readOnly
     });
 
-    // LA MAGIA AQUÍ: Bloqueamos las teclas de navegación
+    // Intercept and prevent default terminal navigation keys to avoid cursor desynchronization
     term.attachCustomKeyEventHandler((e) => {
       const blockedKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown'];
       if (blockedKeys.includes(e.code)) {
-        return false; // Retornar false anula el comportamiento por defecto de la terminal
+        return false; 
       }
-      return true; // Permitimos el resto de teclas (letras, números, backspace)
+      return true; 
     });
     
     const fitAddon = new FitAddon();
@@ -109,7 +125,7 @@ const Terminal: React.FC<TerminalProps> = ({
           inputBuffer.current = ''; 
         } 
         else {
-          // Filtramos cualquier otra secuencia de escape (ej. por si se cuela alguna combinacion rara)
+          // Filter stray escape sequences from rendering locally
           if (!data.startsWith('\x1b')) {
             inputBuffer.current += data;
             term.write(`\x1b[32m${data}\x1b[0m`);

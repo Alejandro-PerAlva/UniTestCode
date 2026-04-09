@@ -1,21 +1,41 @@
-// src/components/auth/AuthForm.tsx
+/**
+ * @module AuthForm
+ * Presentation component for the authentication interface.
+ * Handles both user login and new account registration flows dynamically.
+ */
+
 import React from 'react';
 import { Code2, LogIn, UserPlus, KeyRound } from 'lucide-react';
 
-// Tipamos las props basándonos en lo que devuelve nuestro hook
-interface AuthFormProps {
+/**
+ * Props for the AuthForm component.
+ */
+export interface AuthFormProps {
+  /** Flag determining whether the form is in Login mode (true) or Registration mode (false). */
   isLogin: boolean;
+  /** Current email input value. */
   email: string;
+  /** Handler for email input changes. */
   setEmail: (e: string) => void;
+  /** Current password input value. */
   password: string;
+  /** Handler for password input changes. */
   setPassword: (p: string) => void;
+  /** Currently selected user role (registration only). */
   role: string;
+  /** Handler for role selection changes. */
   setRole: (r: string) => void;
+  /** Current secret invitation code input value (registration only). */
   secretCode: string;
+  /** Handler for secret code input changes. */
   setSecretCode: (s: string) => void;
+  /** Error message to display. Empty string if no error. */
   error: string;
+  /** Flag to disable inputs and show loading state during API calls. */
   isLoading: boolean;
+  /** Handler for the form submission event. */
   onSubmit: (e: React.FormEvent) => void;
+  /** Handler to toggle between Login and Registration modes. */
   onToggleMode: () => void;
 }
 
@@ -27,7 +47,6 @@ const AuthForm: React.FC<AuthFormProps> = ({
   return (
     <div className="w-full max-w-md bg-gray-900 border border-gray-800 rounded-lg p-8 shadow-2xl flex flex-col gap-6">
       
-      {/* Cabecera y Logo */}
       <div className="flex flex-col items-center gap-3 border-b border-gray-800 pb-6">
         <Code2 size={48} className="text-blue-500" />
         <h1 className="text-2xl font-bold text-white">UnitTestCode</h1>
@@ -36,14 +55,12 @@ const AuthForm: React.FC<AuthFormProps> = ({
         </p>
       </div>
 
-      {/* Mensaje de Error */}
       {error && (
         <div className="bg-red-950/50 border border-red-900 text-red-400 p-3 rounded text-sm text-center">
           {error}
         </div>
       )}
 
-      {/* Formulario */}
       <form onSubmit={onSubmit} className="flex flex-col gap-4">
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-bold text-gray-400">Correo Electrónico</label>
@@ -63,7 +80,6 @@ const AuthForm: React.FC<AuthFormProps> = ({
           />
         </div>
 
-        {/* Campos extra para Registro */}
         {!isLogin && (
           <>
             <div className="flex flex-col gap-1.5">
@@ -99,7 +115,6 @@ const AuthForm: React.FC<AuthFormProps> = ({
         </button>
       </form>
 
-      {/* Botón para alternar modo */}
       <div className="text-center pt-4 border-t border-gray-800">
         <button type="button" onClick={onToggleMode} className="text-sm text-gray-400 hover:text-blue-400 transition-colors">
           {isLogin ? '¿No tienes cuenta? Regístrate aquí' : '¿Ya tienes cuenta? Inicia sesión'}

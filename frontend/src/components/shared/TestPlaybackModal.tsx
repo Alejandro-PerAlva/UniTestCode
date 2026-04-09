@@ -1,11 +1,23 @@
+/**
+ * @module TestPlaybackModal
+ * Modal component for previewing the expected output of a specific test case.
+ * Used primarily within the Test Manager by teachers to verify test behavior.
+ */
+
 import React from 'react';
 import { X, Terminal as TerminalIcon } from 'lucide-react';
 import { useTestFormatter } from '../../hooks/shared/useTestFormatter';
 import type { TestCase } from '../../types';
 
-interface TestPlaybackModalProps {
+/**
+ * Props for the TestPlaybackModal component.
+ */
+export interface TestPlaybackModalProps {
+  /** The test case entity to preview. */
   test: TestCase;
+  /** The zero-based index of the test within the suite. */
   index: number;
+  /** Callback to trigger modal closure. */
   onClose: () => void;
 }
 

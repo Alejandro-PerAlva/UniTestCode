@@ -1,13 +1,22 @@
+/**
+ * @module useSubmissionLogic
+ * Handles the logic for student code submissions and batch test evaluations.
+ */
+
 import { useState, useEffect, type ChangeEvent } from 'react';
 import { fetchExercises } from '../../services/api';
 import type { Exercise, SubmissionResponse } from '../../types';
 
+/**
+ * Custom hook to manage the file upload and evaluation flow for a specific exercise.
+ * * @returns State variables, selected entities, and the file evaluation handler.
+ */
 export const useSubmissionLogic = () => {
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [selectedExerciseId, setSelectedExerciseId] = useState<number | ''>('');
   const [file, setFile] = useState<File | null>(null);
   const [isEvaluating, setIsEvaluating] = useState(false);
-  const [evalData, setEvalData] = useState<SubmissionResponse | null>(null); // ¡Adiós any!
+  const [evalData, setEvalData] = useState<SubmissionResponse | null>(null);
   
   const [viewedTestIndex, setViewedTestIndex] = useState<number | null>(null);
   const [showDescription, setShowDescription] = useState(false);
@@ -48,7 +57,6 @@ export const useSubmissionLogic = () => {
       const studentCode = event.target?.result as string;
 
       try {
-        // Nota: En un futuro, llevaremos este fetch directo a services/api.ts
         const response = await fetch(`http://localhost:5000/api/exercises/${selectedExerciseId}/evaluate`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -57,8 +65,8 @@ export const useSubmissionLogic = () => {
         
         const data = await response.json();
         setEvalData(data);
-      } catch (err) {
-        console.error("Error evaluando:", err);
+      } catch (error) {
+        console.error("Error evaluando:", error);
       } finally {
         setIsEvaluating(false);
       }
