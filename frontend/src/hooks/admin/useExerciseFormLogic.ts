@@ -9,7 +9,7 @@ import type { Exercise } from '../../types';
 
 /**
  * Custom hook to encapsulate the form handling for exercises.
- * * @param exercise - The exercise to edit, or null if creating a new one.
+ * @param exercise - The exercise to edit, or null if creating a new one.
  * @param onSaved - Callback triggered after a successful API submission.
  * @returns Form state variables and their respective change handlers.
  */

@@ -10,7 +10,7 @@ import type { Exercise, TestCase } from '../../types';
 
 /**
  * Custom hook to handle real-time execution flows for test case generation.
- * * @param exercise - The target exercise for which tests are being managed.
+ * @param exercise - The target exercise for which tests are being managed.
  * @param onRefresh - Callback to reload the exercise data after saving or deleting a test.
  * @returns State variables and handlers for the test case manager UI.
  */

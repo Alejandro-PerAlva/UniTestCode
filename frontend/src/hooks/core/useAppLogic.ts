@@ -11,7 +11,7 @@ import { socket } from '../../services/socket';
 /**
  * Root-level custom hook for lifecycle management.
  * Connects to the WebSocket server on mount and cleans up on unmount.
- * * @returns The current global authentication status.
+ * @returns The current global authentication status.
  */
 export const useAppLogic = () => {
   const [isAuth, setIsAuth] = useState(isAuthenticated());

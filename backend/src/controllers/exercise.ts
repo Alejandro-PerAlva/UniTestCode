@@ -12,7 +12,7 @@ import { appError, catchAsync } from '../utils/appError.js';
 
 /**
  * Retrieves all available exercises along with their associated test cases.
- * * @param req - The Express request object.
+ * @param req - The Express request object.
  * @param res - The Express response object.
  * @returns A JSON array of all exercises.
  */
@@ -27,7 +27,7 @@ export const getExercises = catchAsync(async (req: Request, res: Response) => {
  * Creates a new programming exercise in the database.
  * If the selected language is MIPS, it automatically parses the teacher's code
  * into strict MARS syntax for future evaluations.
- * * @param req - The Express request object containing exercise metadata and optional tests.
+ * @param req - The Express request object containing exercise metadata and optional tests.
  * @param res - The Express response object.
  * @returns A JSON representation of the newly created exercise.
  */
@@ -54,7 +54,7 @@ export const createExercise = catchAsync(async (req: Request, res: Response) => 
 /**
  * Updates an existing exercise.
  * Conditionally updates the MARS parsed code only if the raw teacher code is modified.
- * * @param req - The Express request object containing the exercise ID and fields to update.
+ * @param req - The Express request object containing the exercise ID and fields to update.
  * @param res - The Express response object.
  * @returns A JSON representation of the updated exercise.
  */
@@ -86,7 +86,7 @@ export const updateExercise = catchAsync(async (req: Request, res: Response) => 
 
 /**
  * Deletes a specific exercise by its ID.
- * * @param req - The Express request object.
+ * @param req - The Express request object.
  * @param res - The Express response object.
  * @returns A JSON success flag.
  */
@@ -101,7 +101,7 @@ export const deleteExercise = catchAsync(async (req: Request, res: Response) => 
 /**
  * Evaluates a student's code submission against all defined test cases for a specific exercise.
  * Leverages the evaluator service to spawn isolated simulator processes.
- * * @param req - The Express request object containing the student's code and target function.
+ * @param req - The Express request object containing the student's code and target function.
  * @param res - The Express response object.
  * @throws {appError} 404 - If the requested exercise does not exist.
  * @throws {appError} 400 - If there is an error building the execution context (e.g., missing labels).
@@ -154,7 +154,7 @@ export const evaluateExercise = catchAsync(async (req: Request, res: Response) =
 
 /**
  * Appends a new test case (inputs and expected output) to an existing exercise.
- * * @param req - The Express request object.
+ * @param req - The Express request object.
  * @param res - The Express response object.
  * @returns A JSON representation of the newly created test case.
  */
@@ -175,7 +175,7 @@ export const createTestCase = catchAsync(async (req: Request, res: Response) => 
 
 /**
  * Deletes a specific test case from an exercise.
- * * @param req - The Express request object.
+ * @param req - The Express request object.
  * @param res - The Express response object.
  * @returns A JSON success flag.
  */
@@ -190,7 +190,7 @@ export const deleteTestCase = catchAsync(async (req: Request, res: Response) => 
 /**
  * Bulk imports an array of exercises into the database.
  * Skips processing for exercises that already exist (matched by title) to prevent duplicates.
- * * @param req - The Express request object containing an array of exercise definitions.
+ * @param req - The Express request object containing an array of exercise definitions.
  * @param res - The Express response object.
  * @returns A JSON payload indicating the number of successfully imported and skipped exercises.
  */

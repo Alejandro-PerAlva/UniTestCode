@@ -21,11 +21,11 @@ export class appError extends Error {
 /**
  * Wraps an asynchronous Express middleware or route handler to catch unhandled promise rejections.
  * Forwards any caught errors to the global Express error handling middleware.
- * * @param fn - The asynchronous Express handler function to wrap.
+ * @param fn - The asynchronous Express handler function to wrap.
  * @returns A new Express middleware function that safely catches errors.
  */
 export const catchAsync = (fn: Function) => {
   return (req: any, res: any, next: any) => {
-    fn(req, res, next).catch(next);
+    return Promise.resolve(fn(req, res, next)).catch(next);
   };
 };

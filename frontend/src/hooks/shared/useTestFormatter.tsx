@@ -7,14 +7,14 @@ import React from 'react';
 
 /**
  * Custom hook exposing text parsing utilities.
- * * @returns An object containing the `renderWithInputs` function.
+ * @returns An object containing the `renderWithInputs` function.
  */
 export const useTestFormatter = () => {
   
   /**
    * Parses raw MIPS console output and structurally injects the provided inputs
    * in sequence after common prompt characters (e.g., ':' or '?').
-   * * @param rawText - The unformatted string output from the simulator.
+   * @param rawText - The unformatted string output from the simulator.
    * @param inputsString - A newline-separated string of user inputs.
    * @returns An array of styled React Nodes for direct rendering.
    */

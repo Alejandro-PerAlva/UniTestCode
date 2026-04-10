@@ -9,7 +9,7 @@ import type { User } from '../../types';
 
 /**
  * Custom hook for managing list-level user operations like deletion and I/O backups.
- * * @param currentUserId - The ID of the currently logged-in admin (to prevent self-deletion).
+ * @param currentUserId - The ID of the currently logged-in admin (to prevent self-deletion).
  * @param onRefresh - Callback to trigger a data reload after a successful operation.
  * @returns Handlers for table actions and a reference for the hidden file input.
  */

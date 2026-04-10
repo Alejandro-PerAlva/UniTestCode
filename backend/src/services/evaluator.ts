@@ -33,7 +33,7 @@ if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
 /**
  * Merges the student's submission with the teacher's template to create a runnable MIPS file.
  * Handles specific function extraction or full template injection based on placeholders.
- * * @param studentCode - The raw MIPS code submitted by the student.
+ * @param studentCode - The raw MIPS code submitted by the student.
  * @param teacherCode - The reference MIPS code or evaluation template provided by the teacher.
  * @param targetFunction - (Optional) The specific label/function to extract from the student's code.
  * @returns An object containing both the ready-to-run student code and teacher code.
@@ -94,7 +94,7 @@ export const buildExecutionCodes = (studentCode: string, teacherCode: string, ta
 
 /**
  * Spawns a Java child process to run the MARS 4.5 simulator against a given file.
- * * @param filePath - The absolute path to the temporary `.s` file.
+ * @param filePath - The absolute path to the temporary `.s` file.
  * @param inputs - An array of strings representing the stdin inputs for the program.
  * @param timeoutMs - Maximum execution time in milliseconds before forcefully killing the process.
  * @returns A promise resolving to the standard output, error output, and timeout status.
@@ -141,7 +141,7 @@ const executeMarsJar = (filePath: string, inputs: string[], timeoutMs: number): 
 /**
  * Writes the MIPS source code to a temporary file, executes it via the MARS simulator,
  * and guarantees the cleanup of the temporary file regardless of execution success or failure.
- * * @param sourceCode - The fully assembled MIPS code to execute.
+ * @param sourceCode - The fully assembled MIPS code to execute.
  * @param inputs - (Optional) Stdin inputs for the simulated program.
  * @param timeout - (Optional) Execution timeout limit in milliseconds. Defaults to 3000ms.
  * @returns A promise resolving to the evaluation result.

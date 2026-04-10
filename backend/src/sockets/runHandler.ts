@@ -17,7 +17,7 @@ if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
 /**
  * Registers event listeners on the provided socket to handle the compilation, 
  * execution, and termination of standard MIPS code sessions.
- * * @param socket - The active client socket connection.
+ * @param socket - The active client socket connection.
  */
 export const setupRunHandler = (socket: Socket) => {
   let marsProcess: ChildProcessWithoutNullStreams | null = null;

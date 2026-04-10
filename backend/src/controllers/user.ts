@@ -12,7 +12,7 @@ import { appError, catchAsync } from '../utils/appError.js';
 /**
  * Retrieves a sanitized list of all users registered in the platform.
  * Sorted primarily by role (teachers first) and secondarily by email.
- * * @param req - The Express request object.
+ * @param req - The Express request object.
  * @param res - The Express response object.
  * @returns A JSON array of user objects (excluding password hashes).
  */
@@ -27,7 +27,7 @@ export const getUsers = catchAsync(async (req: Request, res: Response) => {
 /**
  * Manually creates a new user account.
  * Primarily used by administrators to bypass the self-registration process.
- * * @param req - The Express request object.
+ * @param req - The Express request object.
  * @param res - The Express response object.
  * @throws {appError} 400 - If the provided email is already registered.
  * @returns A JSON representation of the created user (excluding password hash).
@@ -53,7 +53,7 @@ export const createUser = catchAsync(async (req: Request, res: Response) => {
 
 /**
  * Updates an existing user's details, including role elevations or password resets.
- * * @param req - The Express request object containing the target user ID.
+ * @param req - The Express request object containing the target user ID.
  * @param res - The Express response object.
  * @returns A JSON representation of the updated user.
  */
@@ -81,7 +81,7 @@ export const updateUser = catchAsync(async (req: Request, res: Response) => {
  * Deletes a user account from the database.
  * Includes a safety mechanism preventing the currently authenticated administrator 
  * from deleting their own account.
- * * @param req - The Express request object (extended with JWT auth payload).
+ * @param req - The Express request object (extended with JWT auth payload).
  * @param res - The Express response object.
  * @throws {appError} 400 - If the requester attempts to delete their own ID.
  * @returns A JSON success flag.
@@ -100,7 +100,7 @@ export const deleteUser = catchAsync(async (req: AuthRequest, res: Response) => 
 /**
  * Bulk imports an array of users into the database.
  * Assigns a temporary default password to all imported users and skips existing emails.
- * * @param req - The Express request object containing an array of user definitions.
+ * @param req - The Express request object containing an array of user definitions.
  * @param res - The Express response object.
  * @returns A JSON payload indicating the number of successfully imported and skipped users.
  */

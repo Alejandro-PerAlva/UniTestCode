@@ -16,7 +16,7 @@ export type ViewState = 'list' | 'create' | 'edit' | 'test' | 'users' | 'user-cr
 /**
  * Custom hook to manage the top-level state of the admin dashboard.
  * Handles data fetching, view switching, and item selection.
- * * @returns An object containing the current view state, data arrays, selection states, and navigation handlers.
+ * @returns An object containing the current view state, data arrays, selection states, and navigation handlers.
  */
 export const useAdminLogic = () => {
   const [view, setView] = useState<ViewState>('list');

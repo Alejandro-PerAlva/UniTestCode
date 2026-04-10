@@ -9,7 +9,7 @@ import fs from 'fs';
 /**
  * Parses raw error buffers from the MARS simulator and appends user-friendly 
  * troubleshooting hints if specific memory access violations are detected.
- * * @param data - The raw stderr buffer stream emitted by the Java process.
+ * @param data - The raw stderr buffer stream emitted by the Java process.
  * @returns The parsed error string, potentially augmented with a Spanish hint for the user.
  */
 export const interceptMarsError = (data: Buffer): string => {
@@ -24,7 +24,7 @@ export const interceptMarsError = (data: Buffer): string => {
  * Asynchronously attempts to delete a file at the specified path.
  * Fails silently to prevent server crashes if the file has already been deleted
  * or is currently locked by the operating system.
- * * @param filePath - The absolute path of the file to be removed.
+ * @param filePath - The absolute path of the file to be removed.
  */
 export const safeDeleteFile = async (filePath: string) => {
   try {

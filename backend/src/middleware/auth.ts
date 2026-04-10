@@ -32,7 +32,7 @@ export interface AuthRequest extends Request {
 /**
  * Express middleware that intercepts requests to ensure a valid JWT is present in the Authorization header.
  * If valid, decodes the token and attaches the user payload to the request object.
- * * @param req - The Express request object (augmented with AuthRequest).
+ * @param req - The Express request object (augmented with AuthRequest).
  * @param _res - The Express response object (unused).
  * @param next - The Express next middleware function.
  * @throws {appError} 401 - If the token is missing, malformed, or expired.
@@ -58,7 +58,7 @@ export const requireAuth = (req: AuthRequest, _res: Response, next: NextFunction
 /**
  * Express middleware that enforces Role-Based Access Control (RBAC) specifically for teachers.
  * Must be chained AFTER the requireAuth middleware.
- * * @param req - The Express request object containing the decoded user payload.
+ * @param req - The Express request object containing the decoded user payload.
  * @param _res - The Express response object (unused).
  * @param next - The Express next middleware function.
  * @throws {appError} 403 - If the user does not possess the 'teacher' role.

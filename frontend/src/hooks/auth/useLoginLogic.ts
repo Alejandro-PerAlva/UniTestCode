@@ -11,7 +11,7 @@ import { setAuthData } from '../../services/auth';
 /**
  * Custom hook encapsulating the authentication forms logic.
  * Handles dual modes (login vs. registration) and automatic login post-registration.
- * * @returns State variables, toggle handlers, and the form submission routine.
+ * @returns State variables, toggle handlers, and the form submission routine.
  */
 export const useLoginLogic = () => {
   const navigate = useNavigate();

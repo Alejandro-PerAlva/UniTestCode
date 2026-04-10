@@ -19,7 +19,7 @@ if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
 /**
  * Registers event listeners for parallel code execution (Duel) and individual test case validation.
  * Safely manages multiple child processes and ensures proper cleanup upon completion or disconnection.
- * * @param socket - The active client socket connection.
+ * @param socket - The active client socket connection.
  */
 export const setupDuelHandler = (socket: Socket) => {
   let duelStudentProcess: ChildProcessWithoutNullStreams | null = null;

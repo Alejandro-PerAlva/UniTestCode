@@ -9,7 +9,7 @@ import type { User } from '../../types';
 
 /**
  * Custom hook to encapsulate the form handling for user administration.
- * * @param user - The user to edit, or null if creating a new account.
+ * @param user - The user to edit, or null if creating a new account.
  * @param onSaved - Callback triggered after a successful API submission.
  * @returns Form state variables and their respective change handlers.
  */

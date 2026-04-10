@@ -9,7 +9,7 @@ import type { Exercise, SubmissionResponse } from '../../types';
 
 /**
  * Custom hook to manage the file upload and evaluation flow for a specific exercise.
- * * @returns State variables, selected entities, and the file evaluation handler.
+ * @returns State variables, selected entities, and the file evaluation handler.
  */
 export const useSubmissionLogic = () => {
   const [exercises, setExercises] = useState<Exercise[]>([]);

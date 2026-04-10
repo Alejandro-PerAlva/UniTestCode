@@ -182,7 +182,7 @@ const ensureEntryPoint = (code: string): string => {
 /**
  * The main pipeline execution for transpiling non-standard MIPS code into strict MARS syntax.
  * Processes the raw code sequentially through a series of regex-based sanitization steps.
- * * @param code - The raw, potentially non-standard MIPS code string.
+ * @param code - The raw, potentially non-standard MIPS code string.
  * @returns The fully normalized MIPS code ready for MARS simulator execution.
  */
 export const normalizeSpimToMars = (code: string): string => {

@@ -12,7 +12,7 @@ import type { Exercise, TestResultPayload } from '../../types';
 /**
  * Comprehensive custom hook for the interactive IDE environment.
  * Handles code persistence via LocalStorage and real-time execution via WebSockets.
- * * @returns IDE state flags, current source code, and real-time execution handlers.
+ * @returns IDE state flags, current source code, and real-time execution handlers.
  */
 export const useIdeLogic = () => {
   const [exercises, setExercises] = useState<Exercise[]>([]);

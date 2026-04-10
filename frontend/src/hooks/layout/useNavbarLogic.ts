@@ -7,7 +7,7 @@ import { getUser, clearAuthData, isTeacher } from '../../services/auth';
 
 /**
  * Custom hook providing user data and secure logout functionality.
- * * @returns The current user context, role flags, and the logout handler.
+ * @returns The current user context, role flags, and the logout handler.
  */
 export const useNavbarLogic = () => {
   const user = getUser();

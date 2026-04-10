@@ -9,7 +9,7 @@ import type { Exercise } from '../../types';
 
 /**
  * Custom hook for managing list-level exercise operations like deletion, visibility toggling, and I/O.
- * * @param exercises - The current array of exercises displayed in the list.
+ * @param exercises - The current array of exercises displayed in the list.
  * @param onRefresh - Callback to trigger a data reload after a successful operation.
  * @returns Handlers for table actions and a reference for the hidden file input.
  */

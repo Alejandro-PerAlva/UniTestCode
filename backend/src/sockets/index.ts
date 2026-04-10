@@ -9,7 +9,7 @@ import { setupDuelHandler } from './duelHandler.js';
 
 /**
  * Initializes and binds all real-time communication modules to incoming client connections.
- * * @param io - The initialized Socket.IO server instance.
+ * @param io - The initialized Socket.IO server instance.
  */
 export const setupSockets = (io: Server) => {
   io.on('connection', (socket: Socket) => {

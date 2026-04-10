@@ -8,7 +8,7 @@ import { getUser } from '../../services/auth';
 
 /**
  * Extrapolates localized user role text and common navigation paths.
- * * @returns Handlers for primary dashboard actions.
+ * @returns Handlers for primary dashboard actions.
  */
 export const useHomeLogic = () => {
   const navigate = useNavigate();
