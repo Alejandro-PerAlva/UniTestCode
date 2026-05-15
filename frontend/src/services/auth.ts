@@ -35,9 +35,6 @@ export const clearAuthData = () => {
   keysToRemove.forEach(key => localStorage.removeItem(key));
 
   window.dispatchEvent(new Event('auth_change'));
-
-  const loginPath = import.meta.env.MODE === 'production' ? '/tfgapa/login' : '/login';
-  window.location.href = loginPath;
 };
 
 /**
