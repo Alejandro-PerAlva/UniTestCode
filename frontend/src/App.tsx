@@ -18,7 +18,7 @@ function App() {
   const { isAuth } = useAppLogic();
 
   return (
-    <Router basename="/tfgapa/">
+    <Router basename={import.meta.env.MODE === 'production' ? '/tfgapa' : ''}>
       <div className="flex flex-col h-screen w-screen bg-gray-950 overflow-hidden">
         
         {isAuth && <Navbar />}

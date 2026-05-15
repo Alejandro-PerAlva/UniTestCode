@@ -3,14 +3,15 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
+  base: '/tfgapa/',
   plugins: [
     react(),
     tailwindcss(),
   ],
   test: {
-    environment: 'jsdom', 
-    globals: true,        
-    setupFiles: './test/setupTests.ts', 
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: './test/setupTests.ts',
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html']

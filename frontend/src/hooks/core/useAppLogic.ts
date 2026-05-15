@@ -5,7 +5,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { isAuthenticated } from '../../services/auth';
+import { getToken } from '../../services/auth';
 import { socket } from '../../services/socket';
 
 /**
@@ -14,19 +14,24 @@ import { socket } from '../../services/socket';
  * @returns The current global authentication status.
  */
 export const useAppLogic = () => {
-  const [isAuth, setIsAuth] = useState(isAuthenticated());
+  const [isAuth, setIsAuth] = useState(!!getToken());
 
   useEffect(() => {
-    const handleAuthChange = () => setIsAuth(isAuthenticated());
+    const handleAuthChange = () => {
+      setIsAuth(!!getToken());
+    };
+
     window.addEventListener('auth_change', handleAuthChange);
 
-    socket.connect();
+    if (isAuth) {
+      socket.connect();
+    }
 
     return () => {
       window.removeEventListener('auth_change', handleAuthChange);
       socket.disconnect();
     };
-  }, []);
+  }, [isAuth]);
 
   return { isAuth };
 };
