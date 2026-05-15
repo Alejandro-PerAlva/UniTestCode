@@ -31,7 +31,7 @@ axios.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       clearAuthData();
-      window.location.href = import.meta.env.MODE === 'production' ? '/tfgapa/login' : '/login';
+      window.location.href = import.meta.env.MODE === 'production' ? '/tfgapa/' : '/';
     }
     if (!error.response) {
       console.error('Critical network error or unreachable server:', error);
