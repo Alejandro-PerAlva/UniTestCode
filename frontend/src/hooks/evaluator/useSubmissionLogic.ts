@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, type ChangeEvent } from 'react';
-import { fetchExercises } from '../../services/api';
+import { fetchExercises, submitCode } from '../../services/api';
 import type { Exercise, SubmissionResponse } from '../../types';
 
 /**
@@ -57,13 +57,7 @@ export const useSubmissionLogic = () => {
       const studentCode = event.target?.result as string;
 
       try {
-        const response = await fetch(`http://localhost:5000/api/exercises/${selectedExerciseId}/evaluate`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ studentCode }) 
-        });
-        
-        const data = await response.json();
+        const data = await submitCode(selectedExerciseId as number, studentCode);
         setEvalData(data);
       } catch (error) {
         console.error("Error evaluando:", error);
