@@ -16,7 +16,7 @@ import type {
   ImportResult 
 } from '../types';
 
-const API_URL = import.meta.env.MODE === 'production' ? '/api' : 'http://localhost:5000/api';
+const API_URL = import.meta.env.MODE === 'production' ? '/tfgapa/api' : 'http://localhost:5000/api';
 
 axios.interceptors.request.use((config) => {
   const token = getToken();
