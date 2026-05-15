@@ -1,25 +1,20 @@
-/**
- * @module MainApplication
- * Entry point for the Node.js/Express server.
- * Initializes middlewares, REST API routes, Socket.IO connections, and global error handling.
- */
-
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import exerciseRoutes from './routes/exercise.js';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
 import { setupSockets } from './sockets/index.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
 const httpServer = createServer(app);
 
-/**
- * Configures the Socket.IO server with CORS restrictions.
- * Adjusted for the university deployment environment (IAAS ULL).
- */
 const io = new Server(httpServer, {
   cors: {
     origin: "*",
@@ -27,23 +22,23 @@ const io = new Server(httpServer, {
   }
 });
 
-// Middleware configuration
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-// REST API Routes
 app.use('/api/exercises', exerciseRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 
-// Initialize Socket.IO communication
 setupSockets(io);
 
-/**
- * Global error handling middleware.
- * Intercepts instances of appError or generic errors and formats the HTTP response.
- */
+const distPath = path.join(__dirname, '../../frontend/dist');
+app.use(express.static(distPath));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(distPath, 'index.html'));
+});
+
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   const status = err.statusCode || 500;
   const message = err.message || 'Error interno del servidor';
@@ -54,7 +49,6 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   });
 });
 
-// Server listener configuration
 const PORT = process.env.PORT || 5000;
 
 httpServer.listen(PORT, () => {
