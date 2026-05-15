@@ -8,10 +8,15 @@ import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import exerciseRoutes from './routes/exercise.js';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
 import { setupSockets } from './sockets/index.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const httpServer = createServer(app);
@@ -35,6 +40,13 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 
 setupSockets(io);
+
+const distPath = path.join(__dirname, '../../frontend/dist');
+app.use(express.static(distPath));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(distPath, 'index.html'));
+});
 
 /**
  * Global error handling middleware.

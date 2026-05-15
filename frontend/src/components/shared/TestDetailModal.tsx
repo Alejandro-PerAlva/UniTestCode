@@ -28,7 +28,7 @@ const TestDetailModal: React.FC<TestDetailModalProps> = ({ result, originalTest,
   const sharedInputs = originalTest?.inputs ? originalTest.inputs.split('\n').filter(Boolean) : [];
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex justify-center items-center z-50 p-4" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex justify-center items-center z-[60] p-4" onClick={onClose}>
       <div 
         className="bg-zinc-900 border border-zinc-700 rounded-lg w-full max-w-5xl flex flex-col max-h-[85vh] shadow-2xl"
         onClick={(e) => e.stopPropagation()}

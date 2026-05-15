@@ -128,7 +128,7 @@ export const evaluateExercise = catchAsync(async (req: Request, res: Response) =
     throw new appError(err.message, 400);
   }
 
-  const testPromises = exercise.tests.map(async (test) => {
+  const testPromises = exercise.tests.map(async (test: any) => {
     const inputsArray = test.inputs ? test.inputs.split('\n') : [];
     const execution = await evaluateMips(codeToExecute, inputsArray);
     

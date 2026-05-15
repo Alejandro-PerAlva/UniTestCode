@@ -36,3 +36,4 @@ eslint.config.js
 
 # Documentation generated 
 docs/
+coverage/

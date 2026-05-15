@@ -13,6 +13,7 @@ import DualTerminal from '../components/ide/DualTerminal';
 import UnitTestPanel from '../components/ide/UnitTestPanel';
 import DescriptionModal from '../components/shared/DescriptionModal';
 import TestDetailModal from '../components/shared/TestDetailModal';
+import BatchResultsModal from '../components/ide/BatchResultsModal';
 
 const IdePage: React.FC = () => {
   const {
@@ -29,9 +30,13 @@ const IdePage: React.FC = () => {
     evaluatingTestIndex,
     singleTestResult,
     setSingleTestResult,
+    isEvaluatingBatch,
+    batchTestResults,
+    setBatchTestResults,
     handleRunDuel,
     handleStopDuel,
-    handleRunSingleTest
+    handleRunSingleTest,
+    handleRunAllTests
   } = useIdeLogic();
 
   return (
@@ -63,7 +68,9 @@ const IdePage: React.FC = () => {
           selectedExercise={selectedExercise}
           code={code}
           evaluatingTestIndex={evaluatingTestIndex}
+          isEvaluatingBatch={isEvaluatingBatch}
           onRunSingleTest={handleRunSingleTest}
+          onRunAllTests={handleRunAllTests}
         />
 
       </div>
@@ -81,6 +88,32 @@ const IdePage: React.FC = () => {
           originalTest={singleTestResult.originalTest || undefined} 
           testIndex={singleTestResult.testIndex} 
           onClose={() => setSingleTestResult(null)} 
+        />
+      )}
+
+      {batchTestResults && (
+        <BatchResultsModal 
+          evalData={batchTestResults}
+          onClose={() => setBatchTestResults(null)}
+          onViewTest={(index) => {
+            const batchResult = batchTestResults.results![index];
+            const origTest = selectedExercise?.tests?.[index];
+            interface ExtendedResult {
+              expectedOutput?: string;
+              actualOutput?: string;
+            }
+            
+            const safeResult = batchResult as unknown as ExtendedResult;
+            
+            // Construct the individual payload from global data to reuse the TestDetailModal
+            setSingleTestResult({
+              testIndex: index,
+              passed: batchResult.passed,
+              expected: safeResult.expectedOutput || origTest?.expected || '',
+              output: safeResult.actualOutput || '',
+              originalTest: origTest
+            });
+          }}
         />
       )}
       

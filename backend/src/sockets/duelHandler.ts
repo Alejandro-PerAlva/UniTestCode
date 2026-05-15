@@ -1,7 +1,8 @@
 /**
  * @module DuelHandler
- * Orchestrates the "Duel Mode" and single-test execution features.
- * Handles the parallel execution of the student's code and the teacher's reference code.
+ * Orchestrates the "Duel Mode", single-test execution, and batch test evaluations.
+ * Handles the parallel execution of the student's code and the teacher's reference code,
+ * as well as the validation of MIPS assembly against predefined test suites.
  */
 
 import { Socket } from 'socket.io';
@@ -17,17 +18,27 @@ const tempDir = path.join(os.tmpdir(), 'mips_evaluator_temp');
 if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
 
 /**
- * Registers event listeners for parallel code execution (Duel) and individual test case validation.
- * Safely manages multiple child processes and ensures proper cleanup upon completion or disconnection.
- * @param socket - The active client socket connection.
+ * Interface defining the expected structure for incoming evaluation requests.
  */
-export const setupDuelHandler = (socket: Socket) => {
+interface EvaluationPayload {
+  studentCode: string;
+  exerciseId: number;
+  testIndex?: number;
+  targetFunction?: string;
+}
+
+/**
+ * Registers event listeners for parallel code execution (Duel) and test case validations.
+ * Safely manages multiple child processes and ensures proper cleanup upon completion.
+ * * @param {Socket} socket - The active client socket connection.
+ */
+export const setupDuelHandler = (socket: Socket): void => {
   let duelStudentProcess: ChildProcessWithoutNullStreams | null = null;
   let duelTeacherProcess: ChildProcessWithoutNullStreams | null = null;
   let duelStudentPath = '';
   let duelTeacherPath = '';
 
-  socket.on("start_duel", async ({ studentCode, exerciseId, targetFunction }) => {
+  socket.on("start_duel", async ({ studentCode, exerciseId, targetFunction }: EvaluationPayload) => {
     if (duelStudentProcess) duelStudentProcess.kill('SIGKILL');
     if (duelTeacherProcess) duelTeacherProcess.kill('SIGKILL');
 
@@ -43,7 +54,7 @@ export const setupDuelHandler = (socket: Socket) => {
       finalStudentCode = codes.finalStudentCode;
       finalTeacherCode = codeToUse;
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Error desconocido';
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error during code preparation.';
       socket.emit("duel_student_output", `\r\n\x1b[31m[ERROR]: ${errorMessage}\x1b[0m\r\n`);
       socket.emit("duel_student_finished");
       return;
@@ -99,15 +110,15 @@ export const setupDuelHandler = (socket: Socket) => {
     await safeDeleteFile(duelTeacherPath);
   });
 
-  socket.on("run_single_test", async ({ studentCode, exerciseId, testIndex }) => {
+  socket.on("run_single_test", async ({ studentCode, exerciseId, testIndex }: EvaluationPayload) => {
     try {
       const exercise = await prisma.exercise.findUnique({
         where: { id: exerciseId },
         include: { tests: true } 
       });
 
-      if (!exercise || !exercise.tests || !exercise.tests[testIndex]) {
-        socket.emit('single_test_result', { passed: false, error: 'Test no encontrado', testIndex });
+      if (!exercise || !exercise.tests || testIndex === undefined || !exercise.tests[testIndex]) {
+        socket.emit('single_test_result', { passed: false, error: 'Test case not found.', testIndex });
         return;
       }
 
@@ -116,15 +127,19 @@ export const setupDuelHandler = (socket: Socket) => {
 
       try {
         const codeToUse = exercise.teacherCodeMars || exercise.teacherCode || "";
-        // Temporary type assertion required to support legacy frontend implementations
-        const targetFn = (exercise as any).targetFunction || undefined; 
+        
+        // Type-safe property extraction without using 'any'
+        const targetFn = 'targetFunction' in exercise 
+          ? (exercise as Record<string, unknown>).targetFunction as string 
+          : undefined;
+          
         const codes = buildExecutionCodes(studentCode, codeToUse, targetFn);
         finalStudentCode = codes.finalStudentCode;
       } catch (err: unknown) {
-        const errorMessage = err instanceof Error ? err.message : 'Error desconocido';
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error.';
         socket.emit("single_test_result", {
           passed: false,
-          error: `Error al preparar el código: ${errorMessage}`,
+          error: `Code preparation error: ${errorMessage}`,
           testIndex,
           originalTest: test
         });
@@ -147,12 +162,105 @@ export const setupDuelHandler = (socket: Socket) => {
       });
 
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Error desconocido';
+      const errorMessage = err instanceof Error ? err.message : 'Unknown critical error.';
       socket.emit('single_test_result', {
         passed: false,
-        error: `Error crítico de ejecución: ${errorMessage}`,
+        error: `Critical execution error: ${errorMessage}`,
         testIndex,
         originalTest: null
+      });
+    }
+  });
+
+  /**
+   * Evaluates all unit tests sequentially for a given exercise and emits a comprehensive summary.
+   */
+  socket.on("run_all_tests", async ({ studentCode, exerciseId }: EvaluationPayload) => {
+    try {
+      const exercise = await prisma.exercise.findUnique({
+        where: { id: exerciseId },
+        include: { tests: true }
+      });
+
+      if (!exercise || !exercise.tests || exercise.tests.length === 0) {
+        socket.emit('all_tests_result', {
+          success: false,
+          allPassed: false,
+          error: 'Exercise or tests not found.',
+          exerciseId: String(exerciseId),
+          totalTests: 0,
+          passedCount: 0,
+          results: []
+        });
+        return;
+      }
+
+      let finalStudentCode = "";
+
+      try {
+        const codeToUse = exercise.teacherCodeMars || exercise.teacherCode || "";
+        
+        // Type-safe property extraction
+        const targetFn = 'targetFunction' in exercise 
+          ? (exercise as Record<string, unknown>).targetFunction as string 
+          : undefined;
+
+        const codes = buildExecutionCodes(studentCode, codeToUse, targetFn);
+        finalStudentCode = codes.finalStudentCode;
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error.';
+        socket.emit("all_tests_result", {
+          success: false,
+          allPassed: false,
+          error: `Code preparation error: ${errorMessage}`,
+          exerciseId: String(exerciseId),
+          totalTests: exercise.tests.length,
+          passedCount: 0,
+          results: []
+        });
+        return;
+      }
+
+      const results = [];
+      let passedCount = 0;
+      const normalize = (str: string) => str.replace(/\r\n/g, '\n').trim();
+
+      // Sequentially evaluate each test case
+      for (const test of exercise.tests) {
+        const inputs = test.inputs ? test.inputs.split('\n').filter(Boolean) : [];
+        const evalResult = await evaluateMips(finalStudentCode, inputs);
+        
+        const passed = normalize(evalResult.output) === normalize(test.expected);
+        if (passed) passedCount++;
+
+        results.push({
+          testId: test.id,
+          passed,
+          expectedOutput: test.expected,
+          actualOutput: evalResult.output
+        });
+      }
+
+      // Emit the comprehensive batch result payload
+      socket.emit('all_tests_result', {
+        success: true,
+        allPassed: passedCount === exercise.tests.length,
+        exerciseId: String(exerciseId),
+        totalTests: exercise.tests.length,
+        passedCount,
+        results
+      });
+
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown critical error.';
+      socket.emit('all_tests_result', {
+        success: false,
+        allPassed: false,
+        error: `Critical execution error: ${errorMessage}`,
+        exerciseId: String(exerciseId),
+        totalTests: 0,
+        passedCount: 0,
+        results: []
       });
     }
   });

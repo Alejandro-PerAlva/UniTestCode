@@ -1,13 +1,13 @@
 /**
  * @module useIdeLogic
  * Drives the state and real-time Socket.IO interactions for the Web IDE.
- * Orchestrates Duel Mode and Single Test evaluations.
+ * Orchestrates Duel Mode, Single Test evaluations, and Batch evaluations.
  */
 
 import { useState, useEffect } from 'react';
 import { fetchExercises } from '../../services/api';
 import { socket } from '../../services/socket';
-import type { Exercise, TestResultPayload } from '../../types';
+import type { Exercise, TestResultPayload, SubmissionResponse } from '../../types';
 
 /**
  * Comprehensive custom hook for the interactive IDE environment.
@@ -25,6 +25,10 @@ export const useIdeLogic = () => {
 
   const [evaluatingTestIndex, setEvaluatingTestIndex] = useState<number | null>(null);
   const [singleTestResult, setSingleTestResult] = useState<TestResultPayload | null>(null);
+
+  // State management for batch test execution
+  const [isEvaluatingBatch, setIsEvaluatingBatch] = useState(false);
+  const [batchTestResults, setBatchTestResults] = useState<SubmissionResponse | null>(null);
 
   useEffect(() => {
     const loadExercises = async () => {
@@ -44,14 +48,22 @@ export const useIdeLogic = () => {
       setSingleTestResult(result);  
     };
 
+    // Handler to receive comprehensive results from batch execution
+    const handleBatchTestResult = (result: SubmissionResponse) => {
+      setIsEvaluatingBatch(false);
+      setBatchTestResults(result);
+    };
+
     socket.on('duel_student_finished', handleFinish);
     socket.on('duel_teacher_finished', handleFinish);
     socket.on('single_test_result', handleSingleTestResult);
+    socket.on('all_tests_result', handleBatchTestResult);
 
     return () => {
       socket.off('duel_student_finished', handleFinish);
       socket.off('duel_teacher_finished', handleFinish);
       socket.off('single_test_result', handleSingleTestResult);
+      socket.off('all_tests_result', handleBatchTestResult);
     };
   }, []);
 
@@ -93,12 +105,22 @@ export const useIdeLogic = () => {
   };
 
   const handleRunSingleTest = (testIndex: number) => {
-    if (!selectedExercise || !code || evaluatingTestIndex !== null) return;
+    if (!selectedExercise || !code || evaluatingTestIndex !== null || isEvaluatingBatch) return;
     setEvaluatingTestIndex(testIndex);
     socket.emit('run_single_test', {
       studentCode: code,
       exerciseId: selectedExercise.id,
       testIndex
+    });
+  };
+
+  // Function to trigger a batch evaluation of all available tests
+  const handleRunAllTests = () => {
+    if (!selectedExercise || !code || evaluatingTestIndex !== null || isEvaluatingBatch) return;
+    setIsEvaluatingBatch(true);
+    socket.emit('run_all_tests', {
+      studentCode: code,
+      exerciseId: selectedExercise.id
     });
   };
 
@@ -116,8 +138,12 @@ export const useIdeLogic = () => {
     evaluatingTestIndex,
     singleTestResult,
     setSingleTestResult,
+    isEvaluatingBatch,
+    batchTestResults,
+    setBatchTestResults,
     handleRunDuel,
     handleStopDuel,
-    handleRunSingleTest
+    handleRunSingleTest,
+    handleRunAllTests
   };
 };
