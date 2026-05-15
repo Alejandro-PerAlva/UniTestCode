@@ -13,6 +13,7 @@ import { io } from 'socket.io-client';
 const SOCKET_URL = import.meta.env.MODE === 'production' ? '' : 'http://localhost:5000';
 
 export const socket = io(SOCKET_URL, {
+  path: '/tfgapa/socket.io',
   autoConnect: false,
   reconnection: true,
   reconnectionAttempts: 5,
