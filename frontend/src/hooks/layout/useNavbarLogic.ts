@@ -20,7 +20,7 @@ export const useNavbarLogic = () => {
    */
   const handleLogout = () => {
     clearAuthData();
-    window.location.href = '/login'; 
+    window.location.href = '/tfgapa/login'; 
   };
 
   return {
