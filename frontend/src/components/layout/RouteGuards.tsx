@@ -14,10 +14,7 @@ import type { JSX } from 'react';
  * @returns The children component, or a redirect to the login page.
  */
 export const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
-  if (!isAuthenticated()) {
-    const loginPath = import.meta.env.MODE === 'production' ? '/tfgapa/login' : '/login';
-    return <Navigate to={loginPath} replace />;
-  }
+  if (!isAuthenticated()) return <Navigate to="/tfgapa/login" replace />;
   return children;
 };
 
@@ -27,10 +24,7 @@ export const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
  * @returns The children component, or a redirect to the home or login page.
  */
 export const TeacherRoute = ({ children }: { children: JSX.Element }) => {
-  if (!isAuthenticated()) {
-    const loginPath = import.meta.env.MODE === 'production' ? '/tfgapa/login' : '/login';
-    return <Navigate to={loginPath} replace />;
-  }
-  if (!isTeacher()) return <Navigate to="/home" replace />;
+  if (!isAuthenticated()) return <Navigate to="/tfgapa/login" replace />;
+  if (!isTeacher()) return <Navigate to="/tfgapa/home" replace />;
   return children;
 };
